@@ -1,0 +1,31 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://codecreatorsio.sharepoint.com/sites/Education/Shared%20Documents/Forms/AllItems.aspx",
+      "customActions": {
+        "4c884c60-4fb9-4842-8738-1a2c489d44e7": {
+          "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
+          "properties": {
+            "sampleTextOne": "One item is selected in the list",
+            "sampleTextTwo": "This command is always visible."
+          }
+        }
+      }
+    },
+    "commandUrl": {
+      "pageUrl": "https://codecreatorsio.sharepoint.com/sites/Education/Shared%20Documents/Forms/AllItems.aspx",
+      "customActions": {
+        "4c884c60-4fb9-4842-8738-1a2c489d44e7": {
+          "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
+          "properties": {
+            "sampleTextOne": "One item is selected in the list",
+            "sampleTextTwo": "This command is always visible."
+          }
+        }
+      }
+    }
+  }
+}

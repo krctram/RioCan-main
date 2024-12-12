@@ -1,0 +1,464 @@
+<link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/bootstrap.min.css" />
+<link href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/select2.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+<!-- ================== Font Family ================== -->
+<link
+   href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+   rel="stylesheet" />
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<!-- ================== Custom Css ================== -->
+<link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/modalform.css" />
+<link  rel="stylesheet" type="text/css" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/styles.css"/>
+<link  rel="stylesheet" type="text/css" href="/sites/RMSUAT/Style Library/NewDesign/riocan/assets/css/parsley.css"/>
+<script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/popper.min.js"></script>
+<script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+<script src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/select2.min.js"></script>
+<div id="loader-wrapper" style="display: block;">
+   <div id="loader"></div>
+</div>
+<div class="welcome-section">
+   <!--<div class="text-box">Welcome RioCan User<br><span class="bottom-text">Personalized Message and Action Items...</span></div>-->
+   <div class="text-box">Welcome <label id="loginName"></label><br><span class="bottom-text">Start Your Search Today</span></div>
+   <div class="btn-wrapper">
+      <button class="up-btn" type="button"  data-toggle="modal" data-target="#exampleModalCenter"><span class="icon"><img src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/images/file.svg" alt="" data-themekey="#"/></span>UPLOAD DOCUMENT</button>
+   </div>
+</div>
+<div class="col-lg-12 row search-sections">
+   <!--Omer<div class="search-text-wrapper">
+      <h2 class="search-text">Search</h2>
+      </div>-->
+   <!-- edit - Add Search attributes - Omer -->
+   <!--Omer<div class="search-section" id="globalsearch12">-->
+   <div class="search-text-wrapper">
+      <h2 class="search-text">Search</h2>
+   </div>
+   <div id="firstwrap" class="search-wrapper-one">
+      <div class="close-btn search1"><input class="s1 search-box1" id="Key" type="text" required placeholder="Keyword"/><button class="close-icon1 emptySearchBox1" type="button"></button></div>
+      <div class="close-btn search2"><input class="s1 search-box2" type="text" required id="rc" placeholder="Record Class"/><button class="close-icon1 emptySearchBox2" type="button"></button></div>
+      <div class="close-btn search3"><input class="s1 search-box3" type="text" required id="dc" placeholder="Record Type"/><button class="close-icon1 emptySearchBox3" type="button"></button></div>
+      <div class="close-btn search4"><input class="s1 search-box4" type="text" required id="pn" placeholder="Property Name"/><button class="close-icon1 emptySearchBox4" type="button"></button></div>
+      <div class="hide-search-btn">
+         <button onclick="getsearchresults(); return false" type="button" id="hidesearch" class="quick-search-btn">SEARCH&nbsp;&nbsp;<i class="fa fa-search"></i></button>
+         <button id="hideadsearch" onclick="myFunctionAdvancedSearch()" type="button" class="advanced-search-btn">ADVANCED SEARCH</button>
+      </div>
+   </div>
+   <!-- end - Add Search attributes - Omer -->
+   <div class="col-lg-6 custom-record" id="hidefiled" style="display:none">
+      <!--<label for="">Record Class</label>-->
+      <div class="form-group">
+         <div class="selection">
+            <!--Omer  --<select id="mySelect" onchange="getfields()" class="form-control select2">-->
+            <!--<select id="search_recordclass" onchange="getSearchFieldsFilteredByRecordClass()" class="form-control select2">
+               <!--Omer-->
+            <!--<option>Select Record Class</option>
+               </select>-->
+         </div>
+      </div>
+   </div>
+   <div class="search-wrapper-ones row" id="hidefiled">
+      <div class="searchFieldsDynamic col-lg-8 row">
+      </div>
+      <div class="col-lg-4 hide-search-btns" id="secondSearch" style="visibility:hidden" >
+         <button class="search-btn" type="button" onclick="getAdvancedsearchresults()">SEARCH&nbsp;&nbsp;<i class="fa fa-search"></i></button>
+         <button class="adv-search-btn" type="button" onclick="closeAll()">CLOSE SEARCH</button>
+      </div>
+   </div>
+</div>
+<!--modal-->
+<div class="modal fade modalForm" id="exampleModalCenter" tabindex="-1" role="dialog"
+   aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle"><span class="icon"><img
+               src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/images/file.svg" alt=""/></span><span>Document Upload
+               Form</span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <div>
+               <div class="row">
+                  <div class="col-lg-12 cstm-popups">
+                     <label for="">Record Class</label>
+                     <div class="form-group">
+                        <div class="selection">
+                           <select id="form_recordclass" data-target="rmRecordClassId" onchange="AfterLoaderFunction()" class="form-control select2 ddValOnChange">
+                              <option>Select Record Class</option>
+                           </select>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row formFieldsDynamic col-lg-12">
+                  </div>
+                  <input class="form-control inputfield"  type="text" data-type="Text" data-target="ContentTypeId" placeholder="" id="contype" style="display:none" />
+                  <div id="attachmentfield" style="display:none" class="col-lg-12">
+                     <div class="col-lg-6 offset-lg-3">
+                        <label for="attachment" class="fileLabel">Attach</label>
+                        <div class="files remarks" id="files1">
+                           <span class="btn-file">
+                              <img src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/images/document.svg" alt=""/>
+                              <span>Attach your File here, or <span
+                                 class="clrBlue">browse</span></span>
+                              <input type="file" onchange="myFunctionAttach()" name="files1" id="file1"  />
+                              <p id="demo" style="color: #2b9ce4;"></p>
+                           </span>
+                           <ul class="fileList"></ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="modal-footer">
+            <button type="button" onclick="updatedata()"  class="btn btn-primary showButton">Submit</button>
+         </div>
+      </div>
+   </div>
+</div>
+<!--end-->
+<script type="text/javascript" src="https://riocan.sharepoint.com/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/HomeDev1CopyV2.js"></script>
+<script type="text/javascript" src="https://riocan.sharepoint.com/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/IndexFormDev1.js"></script>
+<script>
+   $(document).ready(function () {
+        
+        document.getElementById('loginName').innerHTML = _spPageContextInfo.userDisplayName;
+   //var id = GetParameterValues('ExxT');
+   //if(id)
+   //{
+   //	displayFormFields();
+   //alert(id)
+   //}
+   
+   });
+   
+   
+   window.addEventListener("load", function(){
+   
+   //});
+   //document.addEventListener("DOMContentLoaded", function(){
+   //function displayFormFieldsOnReroute(){
+   debugger;
+   var dispFormFields = GetParameterValues('ExxT');
+   if(dispFormFields)
+   {
+   
+   //document.getElementById("secondSearch").style.visibility = "visible";
+                //document.getElementById("firstwrap").style.visibility = "hidden";
+   //displayFormFields();
+   }
+   });				
+   //}
+   
+   //window.onload = function displayFormFieldsOnReroute();
+   
+   function GetParameterValues(param) {
+   var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+   for (var i = 0; i < url.length; i++) {
+       var urlparam = url[i].split('=');
+       if (urlparam[0] == param) {
+           return urlparam[1];
+       }
+   }
+   }
+        function OpenDialog() {
+            var Itemid = 2;
+            var htmltag = document.createElement('div');
+            htmltag.innerHTML = 'Item Id is ' + Itemid + '';
+         
+            var pageUrl = 'https://riocan.sharepoint.com/sites/RMSUAT/DropOffLibrary/Forms/upload.aspx?IsDlg=1';
+            var options = SP.UI.$create_DialogOptions();
+            options.title = 'Upload Document';
+            options.width = 600;
+            options.height = 920;
+            options.showClose = true;
+            options.html = htmltag;
+            options.url = pageUrl;
+            options.dialogReturnValueCallback = Function.createDelegate(null, CloseCallback);
+            SP.UI.ModalDialog.showModalDialog(options);
+        }
+        
+        
+         
+        function CloseCallback() {
+            console.log('This the function gets triggered when you close the Modal Dialog');
+        }
+        
+   function myFunctionAttach(){
+   var x = document.getElementById("file1");
+   var txt = "";
+   if ('files' in x) {
+   if (x.files.length == 0) {
+     txt = "Select one file.";
+   } else {
+     for (var i = 0; i < x.files.length; i++) {
+      // txt += "<br><strong>" + (i+1) + ". file</strong><br>";
+       var file = x.files[i];
+       if ('name' in file) {
+         txt += "" + file.name + "<br>";
+       }
+       if ('size' in file) {
+       //  txt += "size: " + file.size + " bytes <br>";
+       }
+     }
+   }
+   } 
+   else {
+   if (x.value == "") {
+     txt += "Select one or more files.";
+   } else {
+     txt += "The files property is not supported by your browser!";
+     txt  += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead. 
+   }
+   }
+   document.getElementById("demo").innerHTML = txt;
+   }
+   
+     function myFunction() {
+       var x = document.getElementById("second-wrap");
+       if (x.style.display === "none") {
+         x.style.display = "block";
+       } else {
+         x.style.display = "none";
+       }
+     }
+     
+     function myFunctionAdvancedSearch() {
+   
+     			document.getElementById("secondSearch").style.visibility = "visible";
+                document.getElementById("firstwrap").style.visibility = "hidden";
+     
+       	 //var key = document.getElementById("Key").value;
+   //var rc = document.getElementById("rc").value;
+   //var dc = document.getElementById("dc").value;
+   //var pn = document.getElementById("pn").value;
+   //var searchtxt = "key=" + key + "&rc=" + rc + "&dc=" + dc + "&pn=" + pn;
+   //var Searchurl = "https://riocan.sharepoint.com/sites/RMS/Pages/homepage.aspx?ExxT=1&" + searchtxt;
+     			 displayFormFields();
+                 //window.open(Searchurl);
+                  
+             }
+     setTimeout(function(){ 
+   
+   $('div#s4-workspace').scrollTop(0).top-150;
+   
+   },2000);
+   
+   $('.close-icon1').click(function(){
+   //$('.search-box1').val('');
+   });
+   
+   $('.emptySearchBox1').click(function(){
+   $('.search-box1').val('');
+   });
+   
+   $('.emptySearchBox2').click(function(){
+   $('.search-box2').val('');
+   });
+   
+   $('.emptySearchBox3').click(function(){
+   $('.search-box3').val('');
+   });
+   
+   $('.emptySearchBox4').click(function(){
+   $('.search-box4').val('');
+   });
+   
+   
+   $("body").on("click", ".emptySearchBox32", function(){
+   $('.search-box32').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox33", function(){
+   $('.search-box33').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox34", function(){
+   $('.search-box34').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox35", function(){
+   $('.search-box35').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox36", function(){
+   $('.search-box36').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox37", function(){
+   $('.search-box37').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox38", function(){
+   $('.search-box38').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox39", function(){
+   $('.search-box39').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox40", function(){
+   $('.search-box40').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox41", function(){
+   $('.search-box41').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox42", function(){
+   $('.search-box42').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox43", function(){
+   $('.search-box43').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox44", function(){
+   $('.search-box44').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox45", function(){
+   $('.search-box45').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox46", function(){
+   $('.search-box46').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox47", function(){
+   $('.search-box47').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox49", function(){
+   $('.search-box49').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox50", function(){
+   $('.search-box50').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox51", function(){
+   $('.search-box51').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox52", function(){
+   $('.search-box52').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox53", function(){
+   $('.search-box53').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox54", function(){
+   $('.search-box54').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox86", function(){
+   $('.search-box86').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox87", function(){
+   $('.search-box87').val('');
+   });
+   
+   $("body").on("click", ".emptySearchBox88", function(){
+   $('.search-box88').val('');
+   });
+   $("body").on("click", ".emptySearchBox30", function(){
+   $('.search-box30').val('');
+   });
+   $("body").on("click", ".emptySearchBox59", function(){
+   $('.search-box59').val('');
+   });
+   
+   
+   $('.close2').click(function(){
+   $('.close2').val('');
+   });
+   
+   $('body').click(function(){
+   $('.close-btn').addClass('first-input')
+   });
+   //$('.search-box1').click(function(){
+   //$('.close-btn').removeClass('first-input')
+   //});
+   $('.search-box1').click(function(){
+   $('.search1').removeClass('first-input')
+   });
+   $('.search-box2').click(function(){
+   $('.search2').removeClass('first-input')
+   });
+   $('.search-box3').click(function(){
+   $('.search3').removeClass('first-input')
+   });
+   $('.search-box4').click(function(){
+   $('.search4').removeClass('first-input')
+   });
+   
+   
+   
+   $(document).ready(function () {
+   $(".emptySearchBox1").hover(
+   function () {
+    $('#firstwrap').addClass("first-input1");
+   },
+   function () {
+    $('#firstwrap').removeClass("first-input1");
+   }
+   );
+   
+   $(".emptySearchBox2").hover(
+   function () {
+    $('#firstwrap').addClass("first-input2");
+   },
+   function () {
+    $('#firstwrap').removeClass("first-input2");
+   }
+   );
+   
+   $(".emptySearchBox3").hover(
+   function () {
+    $('#firstwrap').addClass("first-input3");
+   },
+   function () {
+    $('#firstwrap').removeClass("first-input3");
+   }
+   );
+   
+   $(".emptySearchBox4").hover(
+   function () {
+    $('#firstwrap').addClass("first-input4");
+   },
+   function () {
+    $('#firstwrap').removeClass("first-input4");
+   }
+   );
+   });
+   $( window ).on("load", function()  {
+   setTimeout(function(){ 
+    $("#loader-wrapper").css({"display":"none"});
+   }, 1000);
+   });
+   
+   
+   
+</script>
+<script type="text/javascript" src="/sites/RMSUAT/Style Library/NewDesign/riocan/assets/js/parsley.js">//<![CDATA[    
+   //]]>
+</script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">PEYW4UMTFWPC-734717431-3252</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">f7b828cd-48b4-4935-b910-c21dc46f3241</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://riocan.sharepoint.com/sites/RMSUAT/_layouts/15/DocIdRedir.aspx?ID=PEYW4UMTFWPC-734717431-3252, PEYW4UMTFWPC-734717431-3252</mso:_dlc_DocIdUrl>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002FD0257DEEF4B34ABD83BAC2CFF09F1A</mso:ContentTypeId>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+<title></title></head>

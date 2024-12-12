@@ -1,0 +1,281 @@
+<!--<div class="col-lg-12">-->
+<div class="Card-block cstm-librarys">
+    <h1 class="Card-header">Document Library</h1>
+    <!--<div class="col-md-9 mt-2 mb-2">
+        <div class="input-group has-search ml-auto cstm_srch_grp">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <span class="fa fa-search form-control-feedback"></span>
+                </span>
+            </div>
+            <input type="text" id="AMSearch" class="form-control" placeholder="Search" />
+            <div class="input-group-prepend">
+                <a href="javascript:void(0)" id="AMSearchLink" title="" class="btn btn-topsearch input-group-text">
+                    <svg width="32" height="32" viewBox="0 0 32 32" class="ms-searchux-pG29q" aria-hidden="true" focusable="false">
+                        <path d="M-.064 15.04H28.16L15.808 2.688l1.408-1.408L32 16.064 17.216 30.72l-1.408-1.408L28.16 17.024H-.064V15.04z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>-->
+    <div class="Card-body row m-0">
+        <div class="col-md-2">
+            <div id="KnowlegeTree" class="tree tests"></div>
+        </div>
+        <div class="col-md-10 r documents">
+            <iframe style="width: 100%; height: 340px;" id="KnowlegeFrame" src=""></iframe>
+        </div>
+    </div>
+</div>
+<style>
+.Card-block.cstm-librarys.Card-block h1.Card-header {
+    color: black;
+    font-size: 23px;
+    padding: 12px 8px;
+    font-weight: 600;
+    border: 1px solid #e5e5e5;
+    padding-bottom: 15px;
+    margin-bottom: 0px;
+    background-color: white;
+}
+.Card-block.cstm-librarys div#KnowlegeTree ul {
+    padding-left: 10px;
+}
+.Card-block.cstm-librarys div#KnowlegeTree ul li a i.fa.fa-folder-open {
+    color: #ffb900;
+}
+.Card-block.cstm-librarys div#KnowlegeTree ul li {
+    list-style: none;
+    margin-top: 8px;
+    cursor: pointer;}
+    .Card-block.cstm-librarys .Card-body.row.m-0 .col-md-10 {
+    border: 1px solid #e5e5e5;
+    border-top: 0;
+    padding-left: 0;
+    padding-right: 1px;
+}
+.Card-block.cstm-librarys .Card-body.row.m-0 .col-md-2 {
+    border: 1px solid #e5e5e5;
+    border-top: 0;
+    background-color: white;
+    margin-bottom: 7px;
+}
+</style>
+<script>
+$(document).ready(function () {
+	getDocumentLibrary();
+	$('body').on('click','.changeIframeLink',function(){
+		InitialiteDocLibrary(this.dataset.link,$(this).text().trim(),"KnowlegeFrame","KnowlegeTree");
+	});
+});
+function getDocumentLibrary(){
+	$.ajax({
+		// use below REST api to retrive all list items
+		url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('Home_Libraries List')/items?$select=*&$orderby=Order asc",
+		type: "GET",
+		headers: { "accept": "application/json;odata=verbose" },
+		success: (function (data, textStatus, jqXHR) {
+			//console.log(data.d.results);
+			var response = data.d.results;
+		 	InitialiteDocLibrary(data.d.results[0].URL.Url , data.d.results[0].Title ,"KnowlegeFrame","KnowlegeTree");
+		 	var html="<ul>";
+		 	for(var i=0;i<data.d.results.length;i++){
+		 		html+="<li><a class='changeIframeLink' data-link='" +
+                        data.d.results[i].URL.Url +
+                        "'><i class='fa fa-folder-open' aria-hidden='true'></i> "+ data.d.results[i].Title +"</a> ";
+            }
+            html+="</ul>";
+		 	$('#KnowlegeTree').append(html);
+		}),
+		error: (function (xhr, ajaxOptions, thrownError) {
+			alert('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+		})
+	});
+}
+
+//* Tree View Document Library Code *//
+
+var DocLibraryName = "";
+var DocLibraryInternalName = "";
+var sMenuString = "";
+var rootFolders;
+var getInternalDocName = "";
+var TreeID = "";
+var iframeID="";
+function InitialiteDocLibrary(LibraryName, LibraryInternalName, IframeId, TreeId) {
+    DocLibraryName = LibraryName;
+    DocLibraryInternalName = LibraryInternalName;
+    sMenuString = "";
+    rootFolders;
+    getInternalDocName = DocLibraryInternalName;
+    TreeID = TreeId;
+	iframeID=IframeId;
+    var SiteCollectionUrl = _spPageContextInfo.webAbsoluteUrl;
+    var iframeURL = SiteCollectionUrl + "/" + DocLibraryName;
+    DocLibraryUpdate(DocLibraryName, IframeId);
+
+   /* $("#" + IframeId).on("load", function () {
+        $("iframe")
+            .contents()
+            .find("head")
+            .append(
+                '<style type="text/css"> .od-SuiteNav { display: none !important;} .od-TopBar-header.od-Files-header { display: none !important;} .ms-ScrollablePane--contentContainer.contentContainer-93 { overflow-x: hidden; } </style>'
+            );
+    });
+*/
+    /*InitializeTree(getInternalDocName, DocLibraryName);
+	setTimeout(function(){
+		$('body').on('click','.folderLevelUpdateIframe',function(event){
+		    var linkFolder=decodeURIComponent(event.target.dataset.link);
+		    var iframePath=event.target.dataset.iframeid;
+		    $('#'+iframePath).attr('src',linkFolder);
+		});
+	},500);*/
+}
+
+window.scrollTo = function () {};
+
+function DocLibraryUpdate(iframeURL, IframeId) {
+    $("#" + IframeId).attr("src", decodeURIComponent(iframeURL));
+}
+
+function InitializeTree(getInternalDocName, DocLibraryName) {
+    bindTreeView(getInternalDocName, DocLibraryName, TreeID);
+
+    $(".tree li").each(function () {
+        if ($(this).children("ul").length > 0) {
+            $(this).addClass("parent");
+        }
+        if ($(this).children("ul").children("li").length == 0) {
+            $(this).find(".coll").css("opacity", "0");
+        }
+    });
+
+    $(".tree li.parent > a.coll").click(function () {
+        $(this).parent().toggleClass("active");
+        $(this).parent().children("ul").slideToggle("fast");
+        $(this).children("i").toggleClass("fa-caret-right fa-caret-down");
+
+        if ($(this).hasClass("fa-caret-right")) {
+            $(this).removeClass("fa-caret-right");
+            $(this).addClass("fa-caret-down");
+        } else {
+            $(this).removeClass("fa-caret-down");
+            $(this).addClass("fa-caret-right");
+        }
+    });
+
+    $(".folderLevel").click(function () {
+        DocLibraryUpdate($(this).data("link"));
+    });
+}
+
+function bindTreeView(getInternalDocName, DocLibraryName, TreeID) {
+    try {
+        var div = document.getElementById(TreeID);
+        sMenuString = "";
+        $.ajax({
+            url:
+                _spPageContextInfo.webAbsoluteUrl +
+                "/_api/lists/getbytitle('" +
+                getInternalDocName +
+                "')/items?$expand=Folder&$select=ID,Title,EncodedAbsUrl,FileRef,FSObjType,FileLeafRef,Folder/ServerRelativeUrl&$top=500&$orderby=ID%20asc", //assuming web part is added on same site :)
+            type: "GET",
+            headers: { accept: "application/json;odata=verbose" },
+            async: false,
+            success: function (docsData) {
+                if (docsData.d.results.length > 0) {
+                    var getValues = docsData.d.results;
+
+                    rootFolders = $.grep(getValues, function (e) {
+                        if (e.EncodedAbsUrl.split(DocLibraryName + "/")[0] != null) {
+                            var a = e.EncodedAbsUrl.split(DocLibraryName + "/")[0].split("/").length;
+                            return a;
+                        }
+                    });
+                    sMenuString += "<ul>";
+                    sMenuString +=
+                        "<li > <a class='coll cstm_line'> <i class='fa fa-caret-down font-weight-bold' aria-hidden='true'></i></a> <a class='folderLevel' data-link='" +
+                        _spPageContextInfo.webAbsoluteUrl +
+                        "/" +
+                        DocLibraryName +
+                        "'> <i class='fa fa-folder-open' aria-hidden='true'></i> Document Library</a> ";
+                    sMenuString += "<ul>";
+                    $.each(rootFolders, function (i, rootFolder) {
+                    	debugger
+                    	var arrFilePath=rootFolder.FileRef.split('/');
+                    	var parentFolder=arrFilePath[arrFilePath.length-2];
+                        if (rootFolder.FSObjType == 1) {
+                        	if(parentFolder==getInternalDocName||parentFolder==DocLibraryName){
+	                            sMenuString +=
+	                                "<li > <a class='coll cstm_line_to'> <i class='fa fa-caret-down font-weight-bold' aria-hidden='true'></i></a> <a class='folderLevel folderLevelUpdateIframe'  "+
+	                                "data-iframeID='"+iframeID+"' data-link='" +
+	                                encodeURIComponent(rootFolder.EncodedAbsUrl.trim()) +
+	                                "'> <i class='fa fa-folder-open' aria-hidden='true'></i> " +
+	                                rootFolder.FileLeafRef +
+	                                " </a> ";
+	                            sMenuString += "<ul>";
+	                            SubFoldersFiles(getValues, rootFolder.FileLeafRef.replace(/ /g, "%20"), rootFolder.EncodedAbsUrl);
+	                            sMenuString += "</ul>";
+                        	}
+                        } else {
+                            // sMenuString += "<li><a href='"+rootFolder.EncodedAbsUrl+"' target='_blank' > <i class='fa fa-file-text-o' aria-hidden='true'></i> " + rootFolder.FileLeafRef + "</a></li>";
+                        }
+                        sMenuString += "</li>";
+                    });
+
+                    sMenuString += "</ul>";
+                    sMenuString += "</ul>";
+                    div.innerHTML = sMenuString;
+                }
+            },
+        })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log("fail was called");
+            })
+            .done(function (data, textStatus, jqXHR) {
+                console.log("Your IP is " + data.ip);
+                console.log("done was called");
+            })
+            .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+                console.log("always was called");
+            });
+    } catch (e) {
+        alert(e.message);
+    }
+    return false;
+}
+
+function SubFoldersFiles(listItems, currentItem, fullUrl) {
+    var items = [];
+    var subItems = $.grep(listItems, function (e) {
+        if (e.EncodedAbsUrl.split(fullUrl + "/").length > 1) {
+            var fileUrl = e.EncodedAbsUrl.split(fullUrl + "/")[1];
+            if (fileUrl.split("/").length == 1) {
+                return true;
+            }
+        }
+    });
+
+    if (subItems.length > 0) {
+        $.each(subItems, function (i, subItem) {
+            if (subItem.FSObjType == 1) {
+                sMenuString +=
+                    "<li > <a class='coll'> <i class='fa fa-caret-down font-weight-bold' aria-hidden='true'></i></a> <a class='folderLevel folderLevelUpdateIframe'" +
+                    " data-iframeID='"+iframeID+"' data-link='" +
+                    encodeURIComponent(subItem.EncodedAbsUrl.trim()) +
+                    "'> <i class='fa fa-folder-open' aria-hidden='true'></i> " +
+                    subItem.FileLeafRef +
+                    " </a>";
+                sMenuString += "<ul>";
+                SubFoldersFiles(listItems, subItem.FileLeafRef.replace(/ /g, "%20"), subItem.EncodedAbsUrl);
+                sMenuString += "</ul>";
+            } else {
+                // sMenuString += "<li><a href='"+subItem.EncodedAbsUrl+"' target='_blank' > <i class='fa fa-file-text-o' aria-hidden='true'></i> " + subItem.FileLeafRef + "</a></li>";
+            }
+        });
+    }
+}
+
+//* End Of Document Library Code *//
+</script>

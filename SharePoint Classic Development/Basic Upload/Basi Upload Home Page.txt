@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <!-- ================== Title ================== -->
+    <title></title>
+    <!-- ================== Required meta tags ================== -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- ================== Bootstrap CSS ================== -->
+    <link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/bootstrap.min.css" />
+    <link href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/select2.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <!-- ================== Font Family ================== -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+        rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- ================== Custom Css ================== -->
+    <link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/modalform.css" />
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002FD0257DEEF4B34ABD83BAC2CFF09F1A</mso:ContentTypeId>
+<mso:_dlc_DocId msdt:dt="string">PEYW4UMTFWPC-734717431-3249</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">c0d4d58c-145f-4f47-b328-2469790721da</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://riocan.sharepoint.com/sites/RMSUAT/_layouts/15/DocIdRedir.aspx?ID=PEYW4UMTFWPC-734717431-3249, PEYW4UMTFWPC-734717431-3249</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div class="container-fluid p-0">
+        <div class="container">
+            <button type="button" class="btn btn-primary mt-3 mt-md-5" data-toggle="modal"
+                data-target="#exampleModalCenter">
+                Form
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade modalForm" id="exampleModalCenter" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle"><span class="icon"><img
+                                        src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/images/file.svg" alt=""></span><span>Document Upload
+                                    Form</span></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label for="">Record Class<sup>*</sup></label>
+                                        <div class="form-group">
+                                            <div class="selection">
+                                               
+                                           
+											<select id="mySelect" onchange="getfields()" class="form-control select2">
+											        <option>Select One Item...</option>
+											    </select>
+											 </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="row formFieldsDynamic col-lg-12">
+                                    </div>
+                                                                        
+                                     <div id="attachmentfield" style="display:none" class="col-lg-12">                                                                                                           <div class="col-lg-6 offset-lg-3">
+                                     <label for="attachment" class="fileLabel">Attach</label>
+                                        <div class="files remarks" id="files1">
+                                            <span class="btn-file">
+                                                <img src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/images/document.svg" alt="">
+                                                <span>Attach your File here, or <span
+                                                        class="clrBlue">browse</span></span>
+                                                <input type="file" name="files1" id="file1"  />
+                                            </span>
+                                            <ul class="fileList"></ul>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="updatedata()"  class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== Scripting ================== -->
+    <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/popper.min.js"></script>
+    
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+    <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+    <script src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/select2.min.js"></script>
+    <script>
+       /* $(document).ready(function () {
+            $(".datepicker").each(function () {
+                $(this).datepicker({
+                    uiLibrary: "bootstrap4",
+                });
+            });
+
+            $(".select2").select2();
+        });*/
+        
+        $.fn.fileUploader = function (filesToUpload, sectionIdentifier) {
+            var fileIdCounter = 0;
+
+            this.closest(".files").change(function (evt) {
+                var output = [];
+
+                for (var i = 0; i < evt.target.files.length; i++) {
+                    fileIdCounter++;
+                    var file = evt.target.files[i];
+                    var fileId = sectionIdentifier + fileIdCounter;
+
+                    filesToUpload.push({
+                        id: fileId,
+                        file: file
+                    });
+
+                    var removeLink = "<a class=\"removeFile\" href=\"#\" data-fileid=\"" + fileId + "\"><i class=\"fa fa-trash\"></i></a>";
+
+                    output.push("<li>", escape(file.name), removeLink, "</li> ");
+                };
+
+                $(this).children(".fileList")
+                    .append(output.join(""));
+
+                //reset the input to null - nice little chrome bug!
+                evt.target.value = null;
+            });
+
+            $(this).on("click", ".removeFile", function (e) {
+                e.preventDefault();
+
+                var fileId = $(this).parent().children("a").data("fileid");
+
+                // loop through the files array and check if the name of that file matches FileName
+                // and get the index of the match
+                for (var i = 0; i < filesToUpload.length; ++i) {
+                    if (filesToUpload[i].id === fileId)
+                        filesToUpload.splice(i, 1);
+                }
+
+                $(this).parent().remove();
+            });
+
+            this.clear = function () {
+                for (var i = 0; i < filesToUpload.length; ++i) {
+                    if (filesToUpload[i].id.indexOf(sectionIdentifier) >= 0)
+                        filesToUpload.splice(i, 1);
+                }
+
+                $(this).children(".fileList").empty();
+            }
+
+            return this;
+        };
+
+        (function () {
+            var filesToUpload = [];
+
+            var files1Uploader = $("#files1").fileUploader(filesToUpload, "files1");
+            var files2Uploader = $("#files2").fileUploader(filesToUpload, "files2");
+            var files3Uploader = $("#files3").fileUploader(filesToUpload, "files3");
+
+            $("#uploadBtn").click(function (e) {
+                e.preventDefault();
+
+                var formData = new FormData();
+
+                for (var i = 0, len = filesToUpload.length; i < len; i++) {
+                    formData.append("files", filesToUpload[i].file);
+                }
+
+                $.ajax({
+                    url: "http://requestb.in/1k0dxvs1",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("DONE");
+
+                        files1Uploader.clear();
+                        files2Uploader.clear();
+                        files3Uploader.clear();
+                    },
+                    error: function (data) {
+                        alert("ERROR - " + data.responseText);
+                    }
+                });
+            });
+        })()
+</script>
+    <script type="text/javascript">
+        $(function () {
+            //the list which you want to query, replace with your own list name.
+            var listName = 'Form_RecordClasses';
+            $.ajax({
+                // use below REST api to retrive all list items  
+                url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName + "')/items?$select=ID,Title",
+                type: "GET",
+                headers: { "accept": "application/json;odata=verbose" },
+                success: (function (data, textStatus, jqXHR) {
+                    $.each(data.d.results, function (key, value) {
+                        // get each item 
+                        var ID = value.ID;
+                        var title = value.Title;
+                        $('#mySelect').append($('<option>', {
+                            value: ID,
+                            text: title
+                        }));
+                    });
+                }),
+                error: (function (xhr, ajaxOptions, thrownError) {
+                    alert('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+                })
+            });
+        });
+    </script>
+    <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/FileUploader.js"></script>
+    <script type="text/ecmascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/IndexForm.js"></script>
+   </body>
+
+</html>

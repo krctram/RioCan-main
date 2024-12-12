@@ -1,0 +1,939 @@
+var FormFieldsArray = [];
+var choicedata = [];
+var lookupdata = [];
+var lookupdataid = [];
+var ParentOptions = [];
+var ParentOptionsGlobal = [];
+var guidData = [];
+var itemid = 0;
+var fileServerURL = "";
+var LoggedInUserName = 0;
+var recursiveCounter = 0;   	//EditOm
+var recursiveURL = ''; 			//EditOm
+var AllItems = [];  //EditOm
+
+$(document).ready(function() {
+    var username = _spPageContextInfo.userDisplayName;
+    showLoader();
+    getFormRecordClass();
+    getclassrecordfeildsdata();
+    init();
+    initParentChange();
+    GetUsersIDByEmail(username);
+
+    setTimeout(function() {
+        hideLoader();
+    }, 2000);
+
+    $("#form_recordclass").on("change", function() {
+        $("#loader-wrapper").css("display", "block");
+    });
+});
+
+function initParentChange() {
+    $('body').on('change', '.Parent', function() {
+        var InternalName = $(this).data("target");
+
+        var childElement = $('[data-parentinternalname="' + InternalName + '"]');
+
+        var parentSelectedValue = $(this).val();
+        var parentSelectedText = $("option:selected", this).text();
+
+        ChangeDataFromParent(childElement, parentSelectedValue, parentSelectedText);
+    });
+}
+
+function showLoader() {
+    $("#loader-wrapper").show();
+}
+
+function hideLoader() {
+    $("#loader-wrapper").hide()
+}
+
+function init() {
+
+    $(".datepicker").each(function() {
+        $(this).datepicker({
+            uiLibrary: "bootstrap4",
+        });
+    });
+
+    $(".select2").select2();
+
+    $("#attachmentfield").css("display", "none");
+
+    $("#exampleModalCenter").on("shown.bs.modal", function(e) {
+        $(".formFieldsDynamic").html("");
+    });
+
+}
+
+function getclassrecordfeildsdata() {
+    $.ajax({
+        // use below REST api to retrive all list items  
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('Form_Fields')/items?$select=*",
+        type: "GET",
+        headers: {
+            "accept": "application/json;odata=verbose"
+        },
+        success: (function(data, textStatus, jqXHR) {
+            //console.log(data.d.results);
+            FormFieldsArray = data.d.results;
+            //$.each(data.d.results, function (key, value) {
+            // get each item 
+            //var ID = value.ID;
+            //var title = value.Title;
+            //$('#mySelect').append($('<option>', {
+            //   value: ID,
+            //  text: title
+            //}));
+            //});
+        }),
+        error: (function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+        })
+    });
+
+}
+
+
+function getFormRecordClass() {
+    var listName = "Form_RecordClasses";
+    $.ajax({
+        // use below REST api to retrive all list items
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName + "')/items?$select=*",
+        type: "GET",
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            $.each(data.d.results, function(key, value) {
+                // get each item
+                //$('#contype').val(value.ContentTypeID0);
+                var itemID = value.ID;
+                var title = value.Title;
+                var guid = value.GUID0;
+                $("#form_recordclass").append("<option value='" + itemID + "' data-guid='" + guid + "'>" + title + "</option>");
+            });
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+function getRecordClassContype() {
+    var filterQuery = $("#form_recordclass option:selected").val();
+    var listName = "Form_RecordClasses";
+    if (filterQuery != "Select Record Class" && !IsStrNullOrEmpty(filterQuery)) {
+        $.ajax({
+            // use below REST api to retrive all list items
+            url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName + "')/items?$select=ID,Title,ContentTypeID0&$filter=ID eq " + filterQuery,
+            type: "GET",
+            async: false,
+            headers: {
+                accept: "application/json;odata=verbose"
+            },
+            success: function(data, textStatus, jqXHR) {
+                $.each(data.d.results, function(key, value) {
+                    // get each item
+                    $("#contype").val(value.ContentTypeID0);
+                });
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert('An error has occurred! Please contact support team.');
+                console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+            },
+        });
+    }
+}
+
+function AfterLoaderFunction() {
+    $("#loader-wrapper").css("display", "block");
+    //$("#loader-wrapper").css("display", "block");
+    var ddOption = $('.ddValOnChange').find(":selected").text();
+
+    if(ddOption == "Select Record Class")
+    {
+        $(".showButton").attr("disabled", true);
+    }
+    else
+    {
+        $(".showButton").attr("disabled", false);
+    }
+    setTimeout(function() {
+        getFormFieldsFilteredByRecordClass();
+    }, 2000);
+
+}
+
+function getFormFieldsFilteredByRecordClass() {
+
+    $(".formFieldsDynamic").html("");
+    $("#attachmentfield").css("display", "none");
+    getRecordClassContype();
+    var listName = "Form_RecordClasses Fields";
+    //FieldName/ChildListName
+    var selectQuery = "FieldName/Title,FieldName/InternalName,FieldName/CssClass,FieldName/Order0,FieldName/ChildFilterColumn,FieldName/ListName,FieldName/Id,FieldName/TitleColumn,FieldName/ValueColumn,FieldName/SearchSortColumn";
+    var filterQuery = $("#form_recordclass option:selected").val();
+    if (filterQuery != "Select Record Class" && !IsStrNullOrEmpty(filterQuery)) {
+        $.ajax({
+            // use below REST api to retrive all list items
+            url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName + "')/items?$select=*," + selectQuery + "&$expand=FieldName&$filter=ClassNameId eq " + filterQuery,
+            type: "GET",
+            async: false,
+            headers: {
+                accept: "application/json;odata=verbose"
+            },
+            success: function(data, textStatus, jqXHR) {
+                var AllData = [];
+                var DependentFields = [];
+                var count = 0;
+
+                $.each(data.d.results, function(key, value) {
+
+                    AllData.push(value);
+                    FormFieldsArray.filter(function(item) {
+                        if (item.ID == value.FieldNameId) {
+                            AllData[count]["FieldName"]["FieldType"] = item.FieldType;
+                            AllData[count]["FieldName"]["Mandatory"] = item.Mandatory;
+                            if (item.FieldType == "Lookup") {
+                                DependentFields.push(AllData[count]["FieldName"]);
+                            }
+                        }
+                    });
+                    count++;
+                });
+                //count=0;
+                AllData = AllData.sort(function(a, b) {
+                    if (a.FormOrder < b.FormOrder) {
+                        return -1;
+                    }
+                    if (a.FormOrder > b.FormOrder) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                var html = "";
+                for (var i = 0; i < AllData.length; i++) {
+                    if (!IsStrNullOrEmpty(AllData[i].FieldName.InternalName) && AllData[i].FieldName.InternalName != "" && AllData[i].FieldName.InternalName != null) {
+                        html += '<div class="col-lg-6">';
+                        if (AllData[i].FieldName.Mandatory == true) {
+                            html += '<label for="">' + AllData[i].FieldName.Title + "<span>*</span></label>";
+                        } else {
+                            html += '<label for="">' + AllData[i].FieldName.Title + "</label>";
+                        }
+                        if (AllData[i].FieldName.FieldType == "Text") {
+                            html +=
+                                '<div class="form-group">' +
+                                '<input type="text" class="form-control inputfield ' +
+                                AllData[i].FieldName.CssClass +
+                                '" data-target="' +
+                                AllData[i].FieldName.InternalName +
+                                '" data-type="' +
+                                AllData[i].FieldName.FieldType +
+                                '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                AllData[i].FieldName.Mandatory +
+                                '" />' +
+                                "</div>";
+                        } else if (AllData[i].FieldName.FieldType == "Number") {
+                            html +=
+                                '<div class="form-group">' +
+                                '<input type="Number" class="form-control inputfield ' +
+                                AllData[i].FieldName.CssClass +
+                                '" data-target="' +
+                                AllData[i].FieldName.InternalName +
+                                '" data-type="' +
+                                AllData[i].FieldName.FieldType +
+                                '" placeholder="" data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                AllData[i].FieldName.Mandatory +
+                                '" />' +
+                                "</div>";
+                        } else if (AllData[i].FieldName.FieldType == "Date") {
+                            html +=
+                                '<div class="form-group">' +
+                                '<input class="form-control datepicker inputfield ' +
+                                AllData[i].FieldName.CssClass +
+                                '" data-target="' +
+                                AllData[i].FieldName.InternalName +
+                                '" placeholder="" data-type="' +
+                                AllData[i].FieldName.FieldType +
+                                '"  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                AllData[i].FieldName.Mandatory +
+                                '"/>' +
+                                "</div>";
+                        } else if (AllData[i].FieldName.FieldType == "Single Choices" || AllData[i].FieldName.FieldType == "Multi Choices") {
+                            choicedata = [];
+
+                            getchoicedata(AllData[i].FieldName.InternalName, AllData[i].FieldName.Id);
+                            html +=
+                                '<div id="' + AllData[i].FieldName.Id + '" class="form-group">' +
+                                '<select id="slect' +
+                                AllData[i].FieldName.Id +
+                                '" class="form-control inputfield ' +
+                                AllData[i].FieldName.CssClass +
+                                '" data-target="' +
+                                AllData[i].FieldName.InternalName +
+                                '" data-type="' +
+                                AllData[i].FieldName.FieldType +
+                                '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                AllData[i].FieldName.Mandatory +
+                                '" ' + (AllData[i].FieldName.FieldType == "Multi Choices" ? "multiple" : "") + '>';
+                             for (c = 0; c < choicedata.length; c++) {
+                                 html += "<option value=" + choicedata[c] + ">" + choicedata[c] + "</option>";
+                             }
+                            html += "</select>" + "</div>";
+
+
+
+                            
+                        } else if (AllData[i].FieldName.FieldType == "Lookup") {
+                           
+                            lookupdata = [];
+                            ParentOptions = [];
+
+
+                            var IfParentAvailable = checkFieldHasParent('Form_Fields', AllData[i].FieldName.Id);
+
+                            if (ParentOptions.length > 0) {
+                                html +=
+                                    '<div id="' + AllData[i].FieldName.Id + '" class="form-group">' +
+                                    '<select id="lookup' +
+                                    AllData[i].FieldName.ID +
+                                    '" class="form-control inputfield isChild' +
+                                    AllData[i].FieldName.CssClass +
+                                    '" data-target="' +
+                                    AllData[i].FieldName.InternalName +
+                                    '" data-childfiltercolumn="' +
+                                    AllData[i].FieldName.ChildFilterColumn +
+                                    '" data-valuecolumn="' +
+                                    AllData[i].FieldName.ValueColumn +
+                                    '" data-titlecolumn="' +
+                                    AllData[i].FieldName.TitleColumn +
+                                    '" data-sortcolumn="' +
+                                    AllData[i].FieldName.SearchSortColumn+
+                                    '" data-parentinternalname="' +
+                                    ParentOptions[0].InternalName +
+                                    '" data-childlistname="' +
+                                    AllData[i].FieldName.ListName +
+                                    '" data-type="' +
+                                    AllData[i].FieldName.FieldType +
+                                    '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                    AllData[i].FieldName.Mandatory +
+                                    '">';
+
+                                html += "<option value>Select " + ParentOptions[0].Title + " First </option>"
+                                /* for (l = 0; l < lookupdata.length; l++) {
+                                     html += "<option value=" + lookupdataid[l] + ">" + lookupdata[l] + "</option>";
+                                 }*/
+                                html += "</select>" + "</div>";
+
+
+                            } else {
+                                getlookupdata(AllData[i].FieldName.ListName, AllData[i].FieldName.Order0, AllData[i].FieldName.TitleColumn, AllData[i].FieldName.ValueColumn, AllData[i].FieldName.Id, AllData[i].FieldName.SearchSortColumn);
+                                html +=
+                                    '<div id="' + AllData[i].FieldName.Id + '" class="form-group">' +
+                                    '<select id="lookup' +
+                                    AllData[i].FieldName.Order0 +
+                                    '" class="form-control inputfield ' +
+                                    AllData[i].FieldName.CssClass +
+                                    '" data-target="' +
+                                    AllData[i].FieldName.InternalName +
+                                    '" data-type="' +
+                                    AllData[i].FieldName.FieldType +
+                                    '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                    AllData[i].FieldName.Mandatory +
+                                    '">' +
+                                    '<option value>Select </option>';
+
+                                /* for (l = 0; l < lookupdata.length; l++) {
+                                     html += "<option value=" + lookupdataid[l] + ">" + lookupdata[l] + "</option>";
+                                 } */
+                                html += "</select>" + "</div>";
+
+                            }
+                            //else close
+                        } else if (AllData[i].FieldName.FieldType == "Managed Meta Data") {
+                            lookupdata = [];
+                            guidData = [];
+                            lookupdataid = [];
+                            ParentOptions = [];
+                            
+                            var IfParentAvailable = checkFieldHasParent('Form_Fields', AllData[i].FieldName.Id);
+
+                            if (ParentOptions.length > 0) {
+                                html +=
+                                    '<div id="' + AllData[i].FieldName.Id + '" class="form-group">' +
+                                    '<select id="lookup' +
+                                    AllData[i].FieldName.ID +
+                                    '" class="form-control inputfield isChild ' +
+                                    AllData[i].FieldName.CssClass +
+                                    '" data-target="' +
+                                    AllData[i].FieldName.InternalName +
+                                    '" data-childlistname="' +
+                                    AllData[i].FieldName.ListName +
+                                    '" data-childfiltercolumn="' +
+                                    AllData[i].FieldName.ChildFilterColumn +
+                                    '" data-valuecolumn="' +
+                                    AllData[i].FieldName.ValueColumn +
+                                    '" data-titlecolumn="' +
+                                    AllData[i].FieldName.TitleColumn +
+                                    '" data-parentinternalname="' +
+                                    ParentOptions[0].InternalName +
+                                    '" data-type="' +
+                                    AllData[i].FieldName.FieldType +
+                                    '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                    AllData[i].FieldName.Mandatory +
+                                    '">';
+                                html += "<option value>Select " + ParentOptions[0].Title + " First </option>"
+                                /* for (l = 0; l < lookupdata.length; l++) {
+                                     html += "<option value=" + lookupdataid[l] + ' data-guid="' + guidData[l] + '">' + lookupdata[l] + "</option>";
+                                 }*/
+                                html += "</select>" + "</div>";
+
+                            } else {
+                                getMetadataValue(AllData[i].FieldName.ListName, AllData[i].FieldName.Order0, AllData[i].FieldName.TitleColumn, AllData[i].FieldName.ValueColumn, AllData[i].FieldName.Id);
+                                html +=
+                                    '<div id="' + AllData[i].FieldName.Id + '" class="form-group">' +
+                                    '<select id="lookup' +
+                                    AllData[i].FieldName.ID +
+                                    '" class="form-control inputfield ' +
+                                    AllData[i].FieldName.CssClass +
+                                    '" data-target="' +
+                                    AllData[i].FieldName.InternalName +
+                                    '" data-type="' +
+                                    AllData[i].FieldName.FieldType +
+                                    '" placeholder=""  data-parsley-required-message= "Fill this field" data-parsley-required= "' +
+                                    AllData[i].FieldName.Mandatory +
+                                    '">' +
+                                    '<option value>Select </option>';
+                              /*  for (l = 0; l < lookupdata.length; l++) {
+                                    html += "<option value=" + lookupdataid[l] + ' data-guid="' + guidData[l] + '">' + lookupdata[l] + "</option>";
+                                } */
+                                html += "</select>" + "</div>";
+
+                            } //else close
+                        }
+
+                       
+
+                        html += "</div>";
+
+                        $(".formFieldsDynamic").append(html);
+                        html = "";
+                        
+                    }
+
+                   
+                }
+                $(".formFieldsDynamic").append(html);
+                for (k = 0; k < ParentOptionsGlobal.length; k++) {
+
+                    var GetParentElem = $('[data-target="' + ParentOptionsGlobal[k].InternalName + '"]');
+                    if (GetParentElem.length > 0) {
+
+                        $(GetParentElem[0]).addClass("Parent")
+                    }
+                }
+
+                $("#attachmentfield").css("display", "block");
+
+                console.log(AllData);
+
+                var childElement = $('[data-parentinternalname="rmRecordClassId"]');
+                var parentSelectedValue = filterQuery;
+
+                ChangeDataFromParent(childElement, parentSelectedValue);
+
+                $(".datepicker").each(function() {
+                    $(this).datepicker({
+                        uiLibrary: "bootstrap4",
+                    });
+                });
+
+                setTimeout(function() {
+                    hideLoader();
+                }, 1000)
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert('An error has occurred! Please contact support team.');
+                console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+            },
+        });
+    }
+    setTimeout(function() {
+        hideLoader();
+    }, 1000)
+
+}
+
+function getchoicedata(colname, RefID) {
+    var colname = "'" + colname + "'";
+    $.ajax({
+        // use below REST api to retrive all list items
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('Drop Off Library')/fields?$filter=EntityPropertyName eq " + colname,
+        type: "GET",
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log(data.d.results);
+            if (!IsStrNullOrEmpty(data.d.results[0].Choices)) {
+                $.each(data.d.results[0].Choices.results, function(key, value) {
+                    // get each item
+                    // var ID = value.ID;
+                    choicedata.push(value);
+                });
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+function getlookupdata(listname, order0, titlecolumn, valuecolumn, ReqField, SearchColumn) {
+    lookupdataid = [];
+    lookupdata = [];
+
+    var listname = listname;
+    var Tilte = titlecolumn;
+    var ValueTitle = valuecolumn;
+    var stringParam = '';
+    var filterQuery = $("#form_recordclass option:selected").val();
+    console.log(_spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=*&$top=1500&$orderby=" + Tilte+ " asc");
+    if (listname == "External_BusinessUnit" || listname == "External_Property") {
+        console.log("getlookupdata -> External_BusinessUnit -> External_Property");
+        stringParam = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=*&$top=1500&$orderby=" + Tilte+ " asc";
+    } else {
+        stringParam = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=*&$top=1500";
+    }
+    $.ajax({
+        // use below REST api to retrive all list items
+        //url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=RecordClassValue/ID,RecordClassValue/Title,RecordFields/ID,RecordFields/Title,*&$expand=RecordClassValue,RecordFields&$filter=(RecordClassValue eq " + filterQuery+") and (RecordFields eq "+ReqField+")",
+
+        //url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=*&$top=1500&$orderby="+Tilte+" asc",
+        url: stringParam,
+        type: "GET",
+        async: true,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log(data.d.results);
+            $.each(data.d.results, function(key, value) {
+                // get each item
+                // var ID = value.ID;
+                lookupdataid.push(value[ValueTitle]);
+                lookupdata.push(value[Tilte]);
+                $('#' + ReqField + " select").append('<option value=' + value[ValueTitle] + '>' + value[Tilte] + '</option>');
+            });
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+
+function ChangeDataFromParent(childElement, parentSelectedValue, parentSelectedText) {
+    var listname = $(childElement).data("childlistname");
+    var Tilte = $(childElement).data("titlecolumn")
+    var ValueTitle = $(childElement).data("valuecolumn");
+    var sortColumn = $(childElement).data("sortcolumn");
+    var filterColumn = $(childElement).data("childfiltercolumn");
+    var type = $(childElement).data("type");
+    // var ElementSelector = childElement[0].id;
+
+    var isFilterColumnLookup = filterColumn.indexOf('/') > 0 ? true : false;
+
+	if(recursiveCounter == 0)
+	{
+	    var RestAPI = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?top=500";
+	
+	    if (isFilterColumnLookup) {
+	        var LookupColumn = filterColumn.substring(0, filterColumn.indexOf('/'));
+	        RestAPI += "&$filter=" + LookupColumn + "Id" + " eq " + parentSelectedValue;
+	        //   RestAPI+= "&$expand="+LookupColumn;
+	        // RestAPI+="&$orderby="+LookupColumn +" asc";
+	        RestAPI += "&$orderby=" + Tilte + " asc"; //--O
+	    } else {
+	        //RestAPI+= "&$filter="+filterColumn+" eq '"+parentSelectedText+"'"; 
+	        RestAPI += "&$filter=" + filterColumn + " eq '" + parentSelectedText + "'&$orderby=" + sortColumn + " asc"; //--O
+	    }
+	}
+	else
+	{	
+		RestAPI = recursiveURL;
+	}
+
+    $(childElement).html('');
+    // console.log(_spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=RecordClassValue/Id,RecordClassValue/Title,*&$expand=RecordClassValue&$filter=RecordClassValueId eq "+parentSelectedValue+"");
+    $.ajax({
+        // use below REST api to retrive all list items
+        //url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=RecordClassValue/Id,RecordClassValue/Title,*&$expand=RecordClassValue",
+        url: RestAPI,
+        type: "GET",
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log(data.d.results);
+            // get each item
+            // var ID = value.ID;
+            $(childElement).append("<option value>Select</option>");
+
+            AllItems = AllItems.concat(data.d.results);  //EditOm
+            
+            if (data.d.__next) { //logic to check if further results exist
+			url = data.d.__next; //returns url to get the next set of items
+			recursiveCounter = recursiveCounter + 1;
+			recursiveURL = data.d.__next;
+			ChangeDataFromParent(childElement, parentSelectedValue, parentSelectedText); //call recursively to fetch results in bunch of 500 items
+			}
+            recursiveCounter = 0;   	//EditOm
+            recursiveURL = '';
+            for (var k = 0; k < AllItems.length; k++) {
+                if (type == "Lookup") {
+                    $(childElement).append("<option value=" + AllItems[k][ValueTitle] + ' >' + AllItems[k][Tilte] + "</option>");
+
+                } else {
+                    $(childElement).append("<option value=" + AllItems[k].ID + ' data-guid="' + AllItems[k].U_ID + '">' + AllItems[k].RecordType + "</option>");
+                }
+            }
+            // $('#slect'+order0).append('<option value='+title+'>'+title+'</option>');
+
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            if(xhr.responseText.match("RecordClassValueId eq Select Record Class"))
+            {
+                alert('Please select Record Class');
+            }
+            else
+            {
+                alert('An error has occurred! Please contact support team.');
+            }
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+    AllItems.length = 0;
+}
+
+function getMetadataValue(listname, order0, titlecolumn, valuecolumn, ReqField) {
+    lookupdataid = [];
+    lookupdata = [];
+    var listname = listname;
+    var Tilte = titlecolumn;
+    var ValueTitle = valuecolumn;
+    // var filterQuery = $("#form_recordclass option:selected").val();
+    console.log(_spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=ID,Title&$top=500");
+    $.ajax({
+        // use below REST api to retrive all list items
+        //url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=RecordClassValue/ID,RecordClassValue/Title,RecordFields/ID,RecordFields/Title,*&$expand=RecordClassValue,RecordFields&$filter=(RecordClassValue eq " + filterQuery+") and (RecordFields eq "+ReqField+")",
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items?$select=*&$top=500",
+        type: "GET",
+        async: true,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log(data.d.results);
+            $.each(data.d.results, function(key, value) {
+                // get each item
+                // var ID = value.ID;
+
+                lookupdataid.push(value.ID);
+                lookupdata.push(value[Tilte]);
+                guidData.push(value.U_ID);
+
+                    $('#'+ReqField +" select").append("<option value=" + value.ID + ' data-guid="' + value.U_ID + '">' + value[Tilte] + "</option>");
+                
+                // $('#slect'+order0).append('<option value='+title+'>'+title+'</option>');
+            });
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+function checkFieldHasParent(listname, itemID) {
+
+    var listname = listname;
+    console.log(_spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items(" + itemID + ")");
+    $.ajax({
+        // use below REST api to retrive all list items
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items(" + itemID + ")",
+        type: "GET",
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            console.log(data.d.ParentFieldId);
+            if (data.d.ParentFieldId != null) {
+                GetParentFieldOptions(listname, data.d.ParentFieldId)
+            }
+
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+function GetParentFieldOptions(listname, itemID) {
+
+    var listname = listname;
+    console.log(_spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items(" + itemID + ")");
+    $.ajax({
+        // use below REST api to retrive all list items
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listname + "')/items(" + itemID + ")",
+        type: "GET",
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+
+            ParentOptions.push(data.d);
+            ParentOptionsGlobal.push(data.d);
+
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert('An error has occurred! Please contact support team.');
+            console.log("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+
+function updatedata() {
+	$(".showButton").attr("disabled", true);
+    var Isfalse = "";
+    $(".formFieldsDynamic :input:not(:button)").each(function(index, value) {
+        if ($(this).parsley().validate() != true) {
+            Isfalse = true;
+        }
+    });
+    if (Isfalse) {$(".showButton").attr("disabled", false);} else {
+    	$(".showButton").attr("disabled", true);
+        uploadFiles($("#file1"), _spPageContextInfo.webAbsoluteUrl, "Drop Off Library");
+    }
+}
+
+function uploadFiles(fileInputControlId, webUrl, documentLibraryName) {
+    for (var i = 0; i < $(fileInputControlId)[0].files.length; i++) {
+        var uploadFile = $(fileInputControlId)[0].files[i];
+        var getFile = getFileBuffer(uploadFile);
+        getFile.done(function(arrayBuffer) {
+            uploadFileToFolder(
+                webUrl,
+                documentLibraryName,
+                uploadFile.name,
+                arrayBuffer,
+                function(data) {
+                    console.log("12" + data.d);
+                    // itemid=data.d.UniqueId;
+                    var vall = data.d.UIVersion;
+                    Version = vall.toString();
+                    VersionLabel = data.d.UIVersionLabel;
+                    ServerRelativeUrl = data.d.ServerRelativeUrl;
+
+                    //DataSaved(vall);
+                },
+                function(data) {
+                    alert('An error has occurred! Please contact support team.');
+                    console.log("File uploading fail");
+                }
+            );
+        });
+    }
+}
+
+//Get the uploaded file buffer.
+function getFileBuffer(uploadFile) {
+    var deferred = jQuery.Deferred();
+    var reader = new FileReader();
+    reader.onloadend = function(e) {
+        deferred.resolve(e.target.result);
+    };
+    reader.onerror = function(e) {
+        deferred.reject(e.target.error);
+    };
+    reader.readAsArrayBuffer(uploadFile);
+    return deferred.promise();
+}
+
+//Upload files into SharePoint library with REST API
+function uploadFileToFolder(webUrl, documentLibraryName, fileName, arrayBuffer, success, failure) {
+    //file added to the subfolder of Rootfolder.
+    var apiUrl = webUrl + "/_api/web/lists/getByTitle('" + documentLibraryName + "')/RootFolder/files/add(url='" + fileName + "', overwrite=true)?$expand=ListItemAllFields";
+    // var apiUrl = webUrl+"/_api/web/lists/getByTitle('" + documentLibraryName + "')/RootFolder/files/add(url='" + fileName + "', overwrite=true)";
+    $.ajax({
+        url: apiUrl,
+        type: "POST",
+        data: arrayBuffer,
+        processData: false,
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose",
+            "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+        },
+        success: function(data) {
+            success(data);
+            itemid = data.d.ListItemAllFields.Id;
+            fileServerURL = data.d.ServerRelativeUrl;
+            DataSaved();
+        },
+        error: function(data) {
+            failure(data);
+        },
+    });
+}
+
+function DataSaved() {
+    ItemID = itemid;
+    var obj = {};
+    obj["__metadata"] = {
+        type: "SP.Data.DropOffLibraryItem",
+    };
+    $(".inputfield").each(function(index) {
+        //console.log( index + ": " + $( this ).val() );
+        /* if($(this).attr("data-target") == "rmRecordType"){
+              obj[$(this).attr("data-target")]={ }
+       }
+       else{*/
+        if (!IsStrNullOrEmpty($(this).attr("data-target"))) {
+            if ($(this).attr("data-type") == "Lookup") {
+                obj[$(this).attr("data-target") + "Id"] = parseInt($(this).val());
+            } else if ($(this).attr("data-type") == "Number") {
+                obj[$(this).attr("data-target")] = parseInt($(this).val());
+            } else if ($(this).attr("data-type") == "Text") {
+                obj[$(this).attr("data-target")] = $(this).val();
+            } else if ($(this).attr("data-type") == "datepicker") {
+                if ($(this).val() != "") {
+                    obj[$(this).attr("data-target")] = $(this).val();
+                }
+            } else if ($(this).attr("data-type") == "Managed Meta Data") {
+                //$(this)[0].selectedOptions[0].value
+                obj[$(this).attr("data-target")] = {
+                    Label: $(this)[0].selectedOptions[0].text,
+                    TermGuid: $($(this)[0].selectedOptions[0]).data("guid"),
+                    WssId: -1,
+                };
+            } else if ($(this).attr("data-type") == "Single Choices") {
+                //Single Choices
+                //Multi Choices
+                //if single
+                obj[$(this).attr("data-target")] = $(this).val();
+            } else if ($(this).attr("data-type") == "Multi Choices") {
+                //if multi selecct
+                /*obj[$(this).attr("data-target")] = {
+		        		"__metadata": {
+		            			"type": "Collection(Edm.String)"
+		        		},
+		        	"results": [ array of selected option ]
+		    		}*/
+            }
+        }
+    });
+    obj["rmRecordClass"] = {
+        Label: $("#form_recordclass option:selected").text(),
+        TermGuid: $("#form_recordclass option:selected").data("guid"),
+        WssId: -1,
+    };
+
+
+    obj["UploadedById"] = LoggedInUserName;
+    debugger;
+    console.log(obj);
+    var header1 = {
+        accept: "application/json;odata=verbose",
+        "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+        "content-Type": "application/json;odata=verbose",
+        "IF-MATCH": "*",
+        "X-HTTP-Method": "MERGE",
+    };
+    var bodyData = JSON.stringify(obj);
+    $.ajax({
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Drop Off Library')/items(" + ItemID + ")",
+        type: "POST",
+        data: bodyData,
+        headers: header1,
+        success: function(data) {
+            var filePath = _spPageContextInfo.webAbsoluteUrl + "/_api/web/GetFileByServerRelativeUrl('" + fileServerURL + "')";
+            $.ajax({
+                // _spPageContextInfo.webAbsoluteUrl - will give absolute URL of the site where you are running the code.
+                // You can replace this with other site URL where you want to apply the function	 
+                url: filePath + "/CheckIn()",
+                type: "POST",
+                headers: {
+                    // Accept header: Specifies the format for response data from the server.
+                    "Accept": "application/json;odata=verbose",
+                    //Content-Type header: Specifies the format of the data that the client is sending to the server
+                    "Content-Type": "application/json;odata=verbose",
+                    // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
+                    // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
+                    "IF-MATCH": "*",
+                    //X-HTTP-Method:  The MERGE method updates only the properties of the entity , while the PUT method replaces the existing entity with a new one that you supply in the body of the POST
+                    "X-HTTP-Method": "PATCH",
+                    // X-RequestDigest header: When you send a POST request, it must include the form digest value in X-RequestDigest header
+                    "X-RequestDigest": $("#__REQUESTDIGEST").val()
+                },
+                success: function(data, status, xhr) {
+                    console.log("Success");
+                },
+                error: function(xhr, status, error) {
+                    console.log("Failed");
+                }
+            });
+            setTimeout(function() {
+                console.log("Record has been Added ..");
+                location.reload();
+            }, 600);
+        },
+        error: function(error) {
+            console.log(error);
+            alert('An error has occurred! Please contact support team.');
+            console.log(JSON.stringify(error));
+        },
+    });
+}
+
+function GetUsersIDByEmail(username) {
+    var result = '';
+
+    // begin work to call across network
+    var requestUri = _spPageContextInfo.webAbsoluteUrl + "/_api/web/SiteUserInfoList/items?$select=Id&$filter=Title eq '" + username + "'";
+
+    $.ajax({
+        url: requestUri,
+        type: "GET",
+        headers: {
+            "ACCEPT": "application/json;odata=verbose"
+        },
+        async: false,
+        success: function(data) {
+            console.log(data.d.results[0].Id);
+            LoggedInUserName = data.d.results[0].Id;
+
+        },
+        error: function() {
+            //alert("Failed to get details");
+        }
+    });
+
+
+    // result = result.substring(0, result.length - 1);
+
+
+}

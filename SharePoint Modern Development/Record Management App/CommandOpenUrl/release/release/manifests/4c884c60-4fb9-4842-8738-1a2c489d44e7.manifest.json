@@ -1,0 +1,45 @@
+{
+  "id": "4c884c60-4fb9-4842-8738-1a2c489d44e7",
+  "alias": "CommandUrlCommandSet",
+  "componentType": "Extension",
+  "extensionType": "ListViewCommandSet",
+  "version": "0.0.1",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "items": {
+    "COMMAND_1": {
+      "title": {
+        "default": "Manage Records"
+      },
+      "iconImageUrl": "data:image/png;base64,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",
+      "type": "command"
+    }
+  },
+  "loaderConfig": {
+    "internalModuleBaseUrls": [
+      "<!-- PATH TO CDN -->"
+    ],
+    "entryModuleId": "command-url-command-set",
+    "scriptResources": {
+      "command-url-command-set": {
+        "type": "path",
+        "path": "command-url-command-set_94115f778ec34a5661b6.js"
+      },
+      "@microsoft/sp-listview-extensibility": {
+        "type": "component",
+        "id": "d37b65ee-c7d8-4570-bc74-2b294ff3b380",
+        "version": "1.12.1"
+      },
+      "@microsoft/sp-core-library": {
+        "type": "component",
+        "id": "7263c7d0-1d6a-45ec-8d85-d4d1d234171b",
+        "version": "1.12.1"
+      },
+      "@microsoft/decorators": {
+        "type": "component",
+        "id": "f97266fb-ccb7-430e-9384-4124d05295d3",
+        "version": "1.12.1"
+      }
+    }
+  }
+}

@@ -1,0 +1,193 @@
+<link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/bootstrap.min.css" />
+      <link href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/select2.min.css" rel="stylesheet" />
+      <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+      <!-- ================== Font Family ================== -->
+      <link
+         href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+         rel="stylesheet" />
+      <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+      <!-- ================== Custom Css ================== -->
+      <link rel="stylesheet" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/modalform.css" />
+      <link  rel="stylesheet" type="text/css" href="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/css/styles.css"/>
+      <link  rel="stylesheet" type="text/css" href="/sites/RMSUAT/Style Library/NewDesign/riocan/assets/css/parsley.css"/>
+
+<style>
+button.btn.btn-primary.cstm-btn {
+    margin-bottom: 20px;
+    background-color: #b9c3d0;
+    border: none;
+    display: block;
+    margin-left: auto;
+    width: 0%;
+}.row.formFieldsDynamic.col-lg-12 label {
+    margin-left: 0!important;
+}
+.main-forms {
+    display: block;
+    width: 100%;
+}
+.col-lg-12.cstm-popups .selection .select2 {
+    width: 26%!important;
+}
+.select2-container--default .select2-selection--single {
+    height: 38px!important;
+}
+
+span#select2-form_recordclass-container {
+    line-height: 33px;
+}
+
+span.select2-selection__arrow {
+    top: 5px!important;
+}
+</style>
+  <div id="loader-wrapper" style="display: block;">
+		<div id="loader"></div>
+	</div>
+<div class="welcome-section">
+         <!--<div class="text-box">Welcome RioCan User<br><span class="bottom-text">Personalized Message and Action Items...</span></div>-->
+         <div class="text-box">Welcome <label id="loginName">George Ali</label><br><span class="bottom-text">Start Your Search Today</span></div>
+              
+               </div>
+               <!---Start Now--->
+               <div class="col-lg-12 row search-sections">
+         <!--Omer<div class="search-text-wrapper">
+            <h2 class="search-text">Search</h2>
+            </div>-->
+         <!-- edit - Add Search attributes - Omer -->
+         <!--Omer<div class="search-section" id="globalsearch12">-->
+         <div class="search-text-wrapper">
+            <h2 class="search-text">Document Form</h2>
+         </div>
+         
+                  <div class="col-lg-12 cstm-popups">
+                           <div class="form-group">
+                           <label for="">Record Class<span>*</span></label>
+                              <div class="selection">
+                              
+                                 <select id="form_recordclass" data-target="rmRecordClassId" onchange="AfterLoaderFunction()" class="form-control select2 ddValOnChange">
+                                    <option >Select Record Class</option>
+                                 </select>
+                              </div>
+                           </div>
+                           
+                        </div>
+                        <div class="main-forms">
+                        <div class="row formFieldsDynamic col-lg-12">
+                        </div>
+                        <div class="row col-lg-12">
+                        <div class="inner-folder" id="filename">
+	                        						
+                        </div>
+                        </div> 
+                        <div class="row col-lg-12">
+                         <button type="button" onclick="updateExternaldata()"  class="btn btn-primary cstm-btn showButton" disabled="disabled">Submit</button>
+                         </div>
+                          </div>
+                        <input class="form-control inputfield"  type="text" data-type="Text" data-target="ContentTypeId" placeholder="" id="contype" style="display:none" />
+                        <div id="attachmentfield" style="display:none" class="col-lg-12">
+                           <div class="col-lg-6 offset-lg-3">
+                              <!--<label for="attachment" class="fileLabel">Attach</label>-->
+                             <!-- <div class="files remarks" id="files1">
+                                 <span class="btn-file">
+                                 <img src="/sites/RMS/Style%20Library/NewDesign/riocan/assets/images/document.svg" alt=""/>
+                                 <span>Attach your File here, or <span
+                                    class="clrBlue">browse</span></span>
+                                 <input type="file" onchange="myFunctionAttach()" name="files1" id="file1"  />
+                                 <p id="demo" style="color: #2b9ce4;"></p>
+                                 </span>
+                                 <ul class="fileList"></ul>
+                              </div>-->
+                           </div>
+                        </div>
+                     </div>
+                        <!---Close--->
+  
+      
+      <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/jquery.min.js"></script>
+      <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/popper.min.js"></script>
+      <script type="text/javascript" src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/bootstrap.min.js"></script>
+      <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+      <script src="/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/select2.min.js"></script>
+      <script type="text/javascript" src="/sites/RMSUAT/Style Library/NewDesign/riocan/assets/js/parsley.js">//<![CDATA[    
+         //]]>
+      </script>
+      
+            <script type="text/javascript" src="https://riocan.sharepoint.com/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/IndexFormDev1.js"></script>
+      <script type="text/javascript" src="https://riocan.sharepoint.com/sites/RMSUAT/Style%20Library/NewDesign/riocan/assets/js/CustomUpload.js"></script>
+
+
+<script>
+$(document).ready(function () {
+            
+            document.getElementById('loginName').innerHTML = _spPageContextInfo.userDisplayName;
+			//var id = GetParameterValues('ExxT');
+			//if(id)
+			//{
+			//	displayFormFields();
+				//alert(id)
+			//}
+			
+			});
+			
+			
+			window.addEventListener("load", function(){
+   
+//});
+			//document.addEventListener("DOMContentLoaded", function(){
+			//function displayFormFieldsOnReroute(){
+			debugger;
+				var dispFormFields = GetParameterValues('ExxT');
+				if(dispFormFields)
+				{
+					
+					//document.getElementById("secondSearch").style.visibility = "visible";
+                    //document.getElementById("firstwrap").style.visibility = "hidden";
+					//displayFormFields();
+				}
+				});				
+			//}
+			
+			//window.onload = function displayFormFieldsOnReroute();
+
+			function GetParameterValues(param) {
+			    var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+			    for (var i = 0; i < url.length; i++) {
+			        var urlparam = url[i].split('=');
+			        if (urlparam[0] == param) {
+			            return urlparam[1];
+			        }
+			    }
+			}
+            function OpenDialog() {
+                var Itemid = 2;
+                var htmltag = document.createElement('div');
+                htmltag.innerHTML = 'Item Id is ' + Itemid + '';
+             
+                var pageUrl = 'https://riocan.sharepoint.com/sites/RMSUAT/DropOffLibrary/Forms/upload.aspx?IsDlg=1';
+                var options = SP.UI.$create_DialogOptions();
+                options.title = 'Upload Document';
+                options.width = 600;
+                options.height = 920;
+                options.showClose = true;
+                options.html = htmltag;
+                options.url = pageUrl;
+                options.dialogReturnValueCallback = Function.createDelegate(null, CloseCallback);
+                SP.UI.ModalDialog.showModalDialog(options);
+            }
+            
+            
+             
+            function CloseCallback() {
+                console.log('This the function gets triggered when you close the Modal Dialog');
+            }
+</script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">George Ali</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002FD0257DEEF4B34ABD83BAC2CFF09F1A</mso:ContentTypeId>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+<title></title></head>

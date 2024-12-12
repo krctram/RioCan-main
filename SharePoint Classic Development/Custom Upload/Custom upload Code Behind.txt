@@ -1,0 +1,620 @@
+var itemid = [];
+var myParam="";
+var fileServerURL = [];
+var siteurl="/sites/RMSUAT/DropOffLibrary/";
+var sourcesiteurladdress="";
+var SourcefileCreatedby=[];
+var SourcefileCreated=[];
+var SourcefileModified=[];
+var SourcefileModifiedBy=[];
+var SourcefileID=[];
+var NewCreatedFileID=[];
+var Sourcelistname="";
+var redirectLink="";
+var LoggedInUserName = 0;
+
+$(document).ready(function() {
+	var username = _spPageContextInfo.userDisplayName;
+	GetUsersIDByEmail(username);
+	showLoader();
+    init();
+    setTimeout(function(){
+    	hideLoader();
+    },2000);
+    var urlParams = new URLSearchParams(window.location.search);
+     myParam= urlParams.get('LeafRef');
+     myParam=myParam.split(';');
+     urldes=myParam[0].split('/');
+     debugger;
+     sourcesiteurladdress="https://riocan.sharepoint.com/"+urldes[1]+"/"+urldes[2];
+     SetDocumentname(myParam);
+    
+});
+function SetDocumentname(myParam)
+{    
+ var html="";
+     for(var a=0;a<myParam.length;a++)
+     { 
+          var b=myParam[a].split('/');
+          var filename=b[b.length-1];
+
+          html+='<a href="'+myParam[a]+'?web=1">';
+          if(filename.includes('.docx')){
+          html+='<img src="https://riocan.sharepoint.com/sites/RMSUAT/Style Library/NewDesign/riocan/assets/images/word.png"/>';
+		    }
+		    else if(filename.includes('.xlsx')){
+          html+='<img src="https://riocan.sharepoint.com/sites/RMSUAT/Style Library/NewDesign/riocan/assets/images/xlsx.png"/>';
+		    }
+		    else if(filename.includes('.pdf')){
+          html+='<img src="https://riocan.sharepoint.com/sites/RMSUAT/Style Library/NewDesign/riocan/assets/images/pdf.png"/>';
+		    }
+		    else{
+          html+='<img src="https://riocan.sharepoint.com/sites/RMSUAT/Style Library/NewDesign/riocan/assets/images/commonfile.png"/>';
+		    }    
+		    html+='<p>'+filename+'</p>';
+		    html+='</a>';
+        
+     }
+     $('#filename').append(html);
+}
+function updateExternaldata() {
+	$(".showButton").attr("disabled", true);
+    var Isfalse = "";
+    var RecordClass=$("#form_recordclass option:selected").text();
+        getRoutedetails(RecordClass);
+        $(".formFieldsDynamic :input:not(:button)").each(function(index, value) {
+	        if ($(this).parsley().validate() != true) {
+	            Isfalse = true;
+	        }
+        });
+    debugger
+    
+    if (Isfalse) {$(".showButton").attr("disabled", false);} else {
+          
+		    for(var i=0;i<myParam.length;i++){
+		         var b=myParam[i].split('/');
+                 var filename=b[b.length-1];
+
+                   if(filename.includes('.')){
+
+			         getSourceDocumentDetails(myParam[i]);
+			         copyDocument(myParam[i],i);
+		         }else{
+		            alert("Incorrect file type.");
+		            location.reload();
+
+		            
+		         }
+		   }
+    }
+
+}
+function getRoutedetails(Record)
+{
+ $.ajax({
+        // use below REST api to retrive all list items
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('Flow_RouteRules')/items?$select=*,TaxCatchAll/Term&$filter=TaxCatchAll/Term eq '"+Record+"'&$expand=TaxCatchAll",
+        type: "GET",
+        async: false,
+        headers: {
+            accept: "application/json;odata=verbose"
+        },
+        success: function(data, textStatus, jqXHR) {
+            
+            redirectLink=_spPageContextInfo.webAbsoluteUrl+"/"+data.d.results[0].Location;
+           
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert("Request failed: " + xhr.status + "\n" + thrownError + "\n" + xhr.responseText);
+        },
+    });
+}
+function getSourceDocumentDetails(sourceUrl)
+{ 
+        debugger;
+    $.ajax({
+                // use below REST api to retrive all list items  
+                url: sourcesiteurladdress+"/_api/Web/GetFileByServerRelativeUrl('"+sourceUrl+"')/ListItemAllFields",
+                type: "GET",
+                async:false,
+                headers: { "accept": "application/json;odata=verbose" },
+                success: (function (data, textStatus, jqXHR) {
+                    //console.log(data.d.results);
+                       //data.d.ID);
+                       SourcefileModifiedBy.push(data.d.EditorId);
+                       SourcefileCreatedby.push(data.d.AuthorId);
+                       SourcefileCreated.push(data.d.Created);
+                       SourcefileModified.push(data.d.Modified);
+                       SourcefileID.push(data.d.ID);
+                       
+                          
+                     
+                 }),
+                error: (function (xhr, ajaxOptions, thrownError) {
+                    if(xhr.responseText.match("does not exist."))
+		            {
+		                alert('File do not exist! Please create file before upload!');
+		            }else if(xhr.responseText.match("checked out for editing")){
+		            
+		            	alert('File already exists in drop off library.');
+		            }
+		            else
+		            {
+		                alert('An error has occurred! Please contact support team.');
+		            }
+                    console.log('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+                })
+            });
+  
+   
+}
+function CopyFile(SoucePathWithFile,i){
+     var b=SoucePathWithFile.split('/');
+     var filename=b[b.length-1];
+     var SourcePath=SoucePathWithFile.replace("/"+filename,"");
+     var destinationurl=siteurl+filename;
+        var oUrl =  sourcesiteurladdress +"/_api/web/getFileByServerRelativeUrl('"+SoucePathWithFile+"')/copyto(strnewurl='"+destinationurl+"',overwrite=true)";
+        $.ajax({
+            url: oUrl,
+            type: "POST",
+            async:false,
+            headers: {
+                "Accept": "application/json; odata=verbose",
+                "X-RequestDigest":  $("#__REQUESTDIGEST").val(),
+                "content-type": "application/json;odata=verbose",
+            },
+            success: function(data){
+                 createLinkDocument(filename,SourcePath,destinationurl,i);
+               
+           },
+            error: function(data){
+                console.log(data);
+            }
+        });
+    }
+ function copyDocument(SoucePathWithFile,i)
+ {
+     var b=SoucePathWithFile.split('/');
+     var filename=b[b.length-1];
+     var SourcePath=SoucePathWithFile.replace("/"+filename,"");
+     var destinationurl=siteurl+filename;
+
+    var sourceSiteUrl = sourcesiteurladdress + "/_api/web/GetFolderByServerRelativeUrl('" + SourcePath + "')/Files('" + filename+ "')/$value";
+    var targetSiteUrl = _spPageContextInfo.webAbsoluteUrl+ "/_api/web/GetFolderByServerRelativeUrl('" + siteurl + "')/Files/Add(url='" + filename+ "',overwrite=true)";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', sourceSiteUrl, true);
+    xhr.setRequestHeader('binaryStringResponseBody', true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function (e) {
+        if (this.status == 200) {
+            var arrayBuffer = this.response;
+            $.ajax({
+                url: targetSiteUrl,
+                method: 'POST',
+                data: arrayBuffer,
+                processData: false,
+                headers: { 'binaryStringRequestBody': 'true', 'Accept': 'application/json;odata=verbose;charset=utf-8', 'X-RequestDigest': $("#__REQUESTDIGEST").val() }
+            })
+            .done(function (postData) {
+              console.log('we did it!');
+              createLinkDocument(filename,SourcePath,destinationurl,i);
+            })
+            .fail(function (jqXHR, ajaxOptions, thrownError ) {
+            if(jqXHR.responseText.match("does not exist."))
+            {
+                alert('File do not exist! Please create file before upload!');
+            } else if(jqXHR.responseText.match("checked out for editing"))
+            {
+            	alert('File already exists in drop off library');
+            }
+            else
+            {
+                alert('An error has occurred! Please contact support team.');
+            }
+            console.log("Request failed: " + jqXHR.status + "\n" + thrownError + "\n" + jqXHR.responseText);
+        });
+        }
+    }
+    xhr.send();
+}
+/*function createLinkDocument(doctitle,SourcePath,destination,i) {
+		var docTitle = doctitle.split('.');
+		docTitle=docTitle[0]+".url";
+		
+		var docContent = "[InternetShortcut] \nURL="+redirectLink+"/"+doctitle;
+		
+		var fullUrl = sourcesiteurladdress + "/_api/web/GetFolderByServerRelativeUrl('"+SourcePath+"')/Files/add(url='" + docTitle +"',overwrite=false)";
+		
+		$.ajax({
+		url: fullUrl,
+		type: "POST",
+		data: docContent,
+		async:false,
+		headers: {
+		"accept": "application/json;odata=verbose",
+		"content-type": "application/json;odata=verbose",
+		"X-RequestDigest": $("#__REQUESTDIGEST").val()
+		},
+		success:(function (data, textStatus, jqXHR) {
+		            var NewCreatedFileUrl=SourcePath+"/"+docTitle;
+		            
+		            getnewcreatedfileproperties(NewCreatedFileUrl);
+		            DeleteSourceFilePermenatly(SourcefileID[i]); 
+		            getdocumnetdetails(destination,i);
+       }),
+        error: (function (xhr, ajaxOptions, thrownError) {
+                    alert('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+                })    
+        });
+    }
+*/
+function createLinkDocument(doctitle,SourcePath,destination,i) {
+
+           var docTitle = doctitle.split('.');
+		docTitle=docTitle[0]+".url";
+		    var soucerpath=	SourcePath.split('/');
+		   var folderName="";
+		    if(soucerpath.length >5  || soucerpath.length == 5)
+		    { 
+		       var counter=0;
+		       for(var l=4;l<soucerpath.length;l++){
+		           if(counter=0){
+		               folderName=soucerpath[l];
+		         }else{
+		              folderName+="/"+soucerpath[l];
+		         }
+		         counter++;
+		       }
+		       
+		    }		    
+		var documentLibraryName=soucerpath[3];
+		var sourcepathforflow="/"+soucerpath[1]+"/"+soucerpath[2];//SourcePath.replace("/"+documentLibraryName,"");
+		
+		var header = {
+		"accept": "application/json;odata=verbose",
+		"X-RequestDigest": $("#__REQUESTDIGEST").val(),
+		"content-Type": "application/json;odata=verbose"
+		};
+		var bodyData = JSON.stringify({
+		__metadata: {
+		type: "SP.Data.FlowExternalFilesListItem"
+		},
+	 
+	   	   'Source_x0020_Link':sourcepathforflow,
+	   	    'Destination_x0020_Link':redirectLink+"/"+doctitle,
+	   	     'FileName':docTitle,
+	   	     'SourceFileItemID':SourcefileID[i].toString(),
+	   	     'FolderName':folderName,
+	   	     'OriginalFileName':doctitle,
+	   	     'SourceLibraryName':documentLibraryName
+			
+
+	   });
+	   $.ajax({
+		url: _spPageContextInfo.webAbsoluteUrl+"/_api/web/lists/GetByTitle('Flow_ExternalFiles')/items",
+		type: "POST",
+		headers: header,
+		data: bodyData,
+		async:false,
+		success: function(data) {
+		console.log(data);
+	         getdocumnetdetails(destination,i);
+	    },
+		error: function(error) {
+		
+	            alert(JSON.stringify(error));
+		}
+		});        
+    
+}
+
+function getnewcreatedfileproperties(NewCreatedFileUrl){
+       var b=NewCreatedFileUrl.split('/');
+        Sourcelistname=b[b.length-2];
+       $.ajax({
+                // use below REST api to retrive all list items  
+                url: sourcesiteurladdress  + "/_api/Web/GetFileByServerRelativeUrl('"+NewCreatedFileUrl+"')/ListItemAllFields",
+                type: "GET",
+                async:false,
+                headers: { "accept": "application/json;odata=verbose" },
+                success: (function (data, textStatus, jqXHR) {
+                   NewCreatedFileID.push(data.d.ID);  
+                 }),
+                error: (function (xhr, ajaxOptions, thrownError) {
+                    alert('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+                })
+            });
+
+}
+function getdocumnetdetails(serverul,i){       
+           $.ajax({
+                // use below REST api to retrive all list items  
+                url: _spPageContextInfo.webAbsoluteUrl + "/_api/Web/GetFileByServerRelativeUrl('"+serverul+"')/ListItemAllFields",
+                type: "GET",
+                async:false,
+                headers: { "accept": "application/json;odata=verbose" },
+                success: (function (data, textStatus, jqXHR) {
+                    console.log(data.d.results);
+                          itemid.push(data.d.Id);
+			            fileServerURL.push(serverul);
+			            if(myParam.length == i+1){
+			            
+			           // UpdateNewSourceFileMetaData();
+			         
+			              DataSavedExternal();
+			            }
+                     
+                 }),
+                error: (function (xhr, ajaxOptions, thrownError) {
+                    alert('Request failed: ' + xhr.status + '\n' + thrownError + '\n' + xhr.responseText);
+                })
+            });
+
+    
+    }
+function DeleteSourceFilePermenatly(id){
+var ListTitle=Sourcelistname;
+    $.ajax({  
+  		  url:  sourcesiteurladdress +"/_api/web/lists/GetByTitle('"+ListTitle+"')/items(" + id + ")",  
+	      method: "POST",  
+	      headers: {  
+          "accept": "application/json;odata=verbose",  
+          "content-type": "application/json;odata=verbose",  
+          "X-RequestDigest": $("#__REQUESTDIGEST").val(),  
+          "IF-MATCH": "*",  
+          "X-HTTP-Method": "DELETE"  
+      },  
+      success: function(data) 
+      {  
+
+          console.log("delete");  
+          	  
+	  },  
+      error: function(error) {  
+          console.log(JSON.stringify(error));  
+
+      }  
+
+     });
+}
+function UpdateNewSourceFileMetaData(){
+    var ListTitle=Sourcelistname;
+    var ListModel=ListTitle.replaceAll(' ','_x0020_');
+   var header1 = {
+		"accept": "application/json;odata=verbose",
+		"X-RequestDigest": $("#__REQUESTDIGEST").val(),
+		"content-Type": "application/json;odata=verbose",
+		"IF-MATCH": "*",  
+        "X-HTTP-Method": "MERGE"
+		};
+   for(var n=0;n<NewCreatedFileID.length;n++)
+   {
+     
+	    var bodyData = JSON.stringify({
+		__metadata: {
+		type: "SP.Data."+ListModel+"Item"
+		},
+	 
+	   	   'EditorId':SourcefileModifiedBy[n],
+	   	   'AuthorId':SourcefileCreatedby[n],
+	   	    'Created':SourcefileCreated[n],
+	   	    'Modified':SourcefileModified[n]
+	   });     
+	    $.ajax({
+			url: sourcesiteurladdress +"/_api/web/lists/GetByTitle('"+ListTitle+"')/items(" + NewCreatedFileID[n]+ ")",
+			type: "POST",
+			data:bodyData,
+			headers: header1,
+	        success: function(data) {
+
+	        			console.log(data);
+			},
+			error: function(error) {
+				alert(JSON.stringify(error));
+			}
+   	 });
+   }
+}
+function DataSavedExternal() {
+    
+    for(var j=0;j<itemid.length;j++){
+      ItemID = itemid[j];
+     var fileurl =fileServerURL[j];
+      Checkoutfile(fileurl);
+      
+    var obj = {};
+    obj["__metadata"] = {
+        type: "SP.Data.DropOffLibraryItem",
+    };
+    $(".inputfield").each(function(index) {
+        //console.log( index + ": " + $( this ).val() );
+        /* if($(this).attr("data-target") == "rmRecordType"){
+              obj[$(this).attr("data-target")]={ }
+       }
+       else{*/
+        if (!IsStrNullOrEmpty($(this).attr("data-target"))) {
+            if ($(this).attr("data-type") == "Lookup") {
+                obj[$(this).attr("data-target")+"Id"] = parseInt($(this).val());
+            } else if ($(this).attr("data-type") == "Number") {
+                obj[$(this).attr("data-target")] = parseInt($(this).val());
+            } else if ($(this).attr("data-type") == "Text") {
+                obj[$(this).attr("data-target")] = $(this).val();
+            } else if ($(this).attr("data-type") == "datepicker") {
+			   if($(this).val() !=""){
+                obj[$(this).attr("data-target")] = $(this).val();
+				}
+            } else if ($(this).attr("data-type") == "Managed Meta Data") {
+            //$(this)[0].selectedOptions[0].value
+                obj[$(this).attr("data-target")] = {
+                    Label:$(this)[0].selectedOptions[0].text,
+                    TermGuid:  $($(this)[0].selectedOptions[0]).data("guid"),
+                    WssId: -1,
+                };
+            } else if ($(this).attr("data-type") == "Single Choices") {
+                //Single Choices
+				//Multi Choices
+                //if single
+                obj[$(this).attr("data-target")] = $(this).val();
+            }else if($(this).attr("data-type") == "Multi Choices"){
+                //if multi selecct
+					/*obj[$(this).attr("data-target")] = {
+		        		"__metadata": {
+		            			"type": "Collection(Edm.String)"
+		        		},
+		        	"results": [ array of selected option ]
+		    		}*/
+            }
+        }
+    });
+    obj["rmRecordClass"] = {
+	    Label: $("#form_recordclass option:selected").text(),
+		TermGuid: $("#form_recordclass option:selected").data("guid"),
+		WssId: -1,
+    };
+    obj["UploadedById"] = LoggedInUserName;
+    console.log(obj);
+    var header1 = {
+        accept: "application/json;odata=verbose",
+        "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+        "content-Type": "application/json;odata=verbose",
+        "IF-MATCH": "*",
+        "X-HTTP-Method": "MERGE",
+    };
+    var bodyData = JSON.stringify(obj);
+    debugger;
+    
+   //setTimeout(function(){),5000);
+   //setTimeout(function(){ console.log('status'); }, 5000);
+   
+    $.ajax({
+        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Drop Off Library')/items(" + ItemID + ")",
+        type: "POST",
+        data: bodyData,
+        headers: header1,
+        async:false,
+        success: function(data) {
+        	var filePath = _spPageContextInfo.webAbsoluteUrl + "/_api/web/GetFileByServerRelativeUrl('" + fileServerURL[j] + "')";
+        	$.ajax({
+	            // _spPageContextInfo.webAbsoluteUrl - will give absolute URL of the site where you are running the code.
+	            // You can replace this with other site URL where you want to apply the function	 
+	            url: filePath + "/CheckIn()",
+	            type: "POST",
+	            async:false,
+	            headers:
+	        {
+	            // Accept header: Specifies the format for response data from the server.
+	            "Accept": "application/json;odata=verbose",
+	            //Content-Type header: Specifies the format of the data that the client is sending to the server
+	            "Content-Type": "application/json;odata=verbose",
+	            // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
+	            // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
+	            "IF-MATCH": "*",
+	            //X-HTTP-Method:  The MERGE method updates only the properties of the entity , while the PUT method replaces the existing entity with a new one that you supply in the body of the POST
+	            "X-HTTP-Method": "PATCH",
+	            // X-RequestDigest header: When you send a POST request, it must include the form digest value in X-RequestDigest header
+	            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+	        },
+	            success: function (data, status, xhr) {
+	                console.log("Success");
+	               // location.reload();
+
+	            },
+	            error: function (xhr, status, error) {
+	                console.log("Failed");
+	                //location.reload();
+
+	            }
+	        });
+	        setTimeout(function(){
+	        debugger
+	            if(itemid.length == j){
+			           alert("Record has been Added ..");
+			           itemid =[];
+	                  location.reload();
+			      }
+
+		               
+	        },600);
+        },
+        error: function(error) {
+        	console.log(error);
+            alert(JSON.stringify(error));
+           // location.reload();
+
+        },
+    });
+           //  }, 5000); 
+    }
+     
+}
+
+
+function  Checkoutfile(fileurl)
+{
+   var filePath = _spPageContextInfo.webAbsoluteUrl + "/_api/web/GetFileByServerRelativeUrl('" + fileurl + "')";
+        	$.ajax({
+	            // _spPageContextInfo.webAbsoluteUrl - will give absolute URL of the site where you are running the code.
+	            // You can replace this with other site URL where you want to apply the function	 
+	            url: filePath + "/CheckOut()",
+	            type: "POST",
+	            async:false,
+	            headers:
+	        {
+	            // Accept header: Specifies the format for response data from the server.
+	            "Accept": "application/json;odata=verbose",
+	            //Content-Type header: Specifies the format of the data that the client is sending to the server
+	            "Content-Type": "application/json;odata=verbose",
+	            // IF-MATCH header: Provides a way to verify that the object being changed has not been changed since it was last retrieved.
+	            // "IF-MATCH":"*", will overwrite any modification in the object, since it was last retrieved.
+	            "IF-MATCH": "*",
+	            //X-HTTP-Method:  The MERGE method updates only the properties of the entity , while the PUT method replaces the existing entity with a new one that you supply in the body of the POST
+	            "X-HTTP-Method": "PATCH",
+	            // X-RequestDigest header: When you send a POST request, it must include the form digest value in X-RequestDigest header
+	            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+	        },
+	            success: function (data, status, xhr) {
+	                console.log("Success");
+	            },
+	            error: function (xhr, status, error) {
+	                console.log("Failed");
+	            }
+	        });
+}
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+function GetUsersIDByEmail(username) {
+    var result = '';
+
+    // begin work to call across network
+    var requestUri = _spPageContextInfo.webAbsoluteUrl + "/_api/web/SiteUserInfoList/items?$select=Id&$filter=Title eq '" + username + "'";
+
+    $.ajax({
+        url: requestUri,
+        type: "GET",
+        headers: {
+            "ACCEPT": "application/json;odata=verbose"
+        },
+        async: false,
+        success: function(data) {
+            console.log(data.d.results[0].Id);
+            LoggedInUserName = data.d.results[0].Id;
+
+        },
+        error: function() {
+            //alert("Failed to get details");
+        }
+    });
+
+
+    // result = result.substring(0, result.length - 1);
+
+
+}

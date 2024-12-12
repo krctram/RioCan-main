@@ -1,0 +1,91 @@
+#Connect-PnPOnline -Url "https://riocan.sharepoint.com/sites/RM-Test/" -UseWebLogin
+Connect-PnPOnline -Url "https://riocan.sharepoint.com/sites/RMS/" -UseWebLogin
+$items = Get-PnPListItem -List "Flow_External Libraries"
+
+
+foreach($item in $items){
+    
+    #Set Variables
+    $SiteURL = $item['Title'];
+  
+    #Connect to PNP Online
+    Connect-PnPOnline -Url $SiteURL -UseWebLogin
+ 
+    #Get all document libraries - Exclude Hidden Libraries
+    $DocumentLibraries = Get-PnPList | Where-Object {$_.BaseTemplate -eq 101 -and $_.Hidden -eq $false} #Or $_.BaseType -eq "DocumentLibrary"
+ 
+    #Get Document Libraries Name, Default URL and Number of Items
+    $DocumentLibraries | Select Title, DefaultViewURL, ItemCount
+    
+    #loop through all document libraries
+    #foreach($Document in $DocumentLibraries)
+    #{
+        #to check if a field with Identity isRecord1 already exist?
+        $isRecordFieldCheck = Get-PnPField -List "Accounting and Finance" -Identity 'isRecord1'
+        #$isRecordFieldCheck = Get-PnPField -List $Document -Identity 'isRecord1'
+
+        #Add new field if do not exist
+        if(!$isRecordFieldCheck)
+        {
+            "reachedHere"
+            $isRecordfield = Add-PnPField -List "Accounting and Finance" -DisplayName "isRecord" -InternalName "isRecord1" -Type Boolean -Group "RecordManagement" -AddToDefaultView
+            #$isRecordfield = Add-PnPField -List $Document -DisplayName "isRecord" -InternalName "isRecord1" -Type Boolean -Group "RecordManagement" -AddToDefaultView 
+            "test"
+        }
+
+        #to check if a field with Identity PublishURL already exist?
+        $isPublishURLCheck = Get-PnPField -List "Accounting and Finance" -Identity 'PublishURL'
+        #$isPublishURLCheck = Get-PnPField -List $Document -Identity 'PublishURL'
+
+        #Add new field if do not exist
+        if(!$isPublishURLCheck)
+        {
+            $PublishURL = Add-PnPField -List "Accounting and Finance" -DisplayName "Record Publish URL" -InternalName "PublishURL" -Type Text -Group "RecordManagement" -AddToDefaultView
+            #$PublishURL = Add-PnPField -List $Document -DisplayName "Record Publish URL" -InternalName "PublishURL" -Type Text -Group "RecordManagement" -AddToDefaultView 
+        }
+        
+        #Get PublishURL field to apply custom column formatting
+        $RecordField = Get-PnPField -List "Accounting and Finance" -Identity 'PublishURL'
+        #$RecordField = Get-PnPField -List $Document -Identity 'PublishURL'
+    
+        #JSON custom column formatting
+        $JSONFile = '{
+      "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+      
+      "elmType": "a" ,
+      "attributes": {
+        "href": "= if([$isRecord1] == true, '''',  ''https://riocan.sharepoint.com/sites/RMS/Pages/CustomUpload.aspx?LeafRef='' + [$FileRef])" ,
+        "target": "_blank" 
+      },
+      "txtContent": "= if([$isRecord1] == true, '''',  ''Publish''"
+    }'
+        
+        #to check if a View with Identity Record Management already exist?
+        $RecordManagementViewCheck = Get-PnPView -List "Accounting and Finance" -Identity "Record Management"
+        #$RecordManagementViewCheck = Get-PnPView -List $Document -Identity "Record Management"
+
+        #Add new View if do not exist
+        if(!$RecordManagementViewCheck)
+        {
+            Add-PnPView -List "Accounting and Finance" -Title "Record Management" -Fields "DocIcon","LinkFilename","Author","isRecord","PublishURL" -SetAsDefault |Out-Null
+            #Add-PnPView -List $Document -Title "Record Management" -Fields "DocIcon","LinkFilename","Author","isRecord","PublishURL" |Out-Null
+        }
+        
+        #Add the custom column formatting to the PublihsURL field
+        $RecordField.CustomFormatter = $JSONFile
+        $RecordField.Update()
+        $RecordField.Context.ExecuteQuery()
+
+    #}
+
+    Install-PnPApp -Identity 90e7d781-6c56-4e95-b047-11d5141ff196
+
+    Connect-PnPOnline -Url "https://riocan.sharepoint.com/sites/RMS/" -UseWebLogin
+    $currentDateTime = Get-Date -format s
+    $currentDateTime
+    $itemID = $item['ID'];
+    $itemID
+    
+    Set-PnPListItem -List "Flow_External Libraries" -Identity $itemID -Values @{"FlowExecuted" = "Yes"; "FlowExecutionDateTime" = $currentDateTime} -SystemUpdate
+
+}

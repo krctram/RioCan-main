@@ -1,0 +1,272 @@
+{
+  "documentationLink": "https://microsoft-search.github.io/pnp-modern-search/",
+  "selectedLayoutKey": "ResultsCustom",
+  "resultTypes": [],
+  "dataSourceProperties": {
+    "queryTemplate": "(Path:https://riocan.sharepoint.com/sites/RMSUAT ContentTypeId:0x010100A36BB973CD579845932308252CEA0BEE01* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1401* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1402* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B14* ContentTypeId:0x010027FC2137D8DE4B00A40E14346D070D5201* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A03* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B14* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1411* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A05* ContentTypeId:0x0100AFBCD126CA72FE4CA5C60ED04005A6AF* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1407* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A02* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A07* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B140F* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1410* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1409* ContentTypeId:0x01007CE30DD1206047728BAFD1C39A850120* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A04* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1412* ContentTypeId:0x010100BB4A69A627119D44B7528DAAEDC49B1404* ContentTypeId:0x0101003A272AB832D37D4BB4B27B36BF569B0A01*) {QueryString.Myparameter1}* AND {QueryString.Search}*",
+    "enableQueryRules": true,
+    "enableLocalization": true,
+    "includeOneDriveResults": false,
+    "refinementFilters": "",
+    "selectedProperties": [
+      "BUName",
+      "CrawledProperties",
+      "Created",
+      "Filename",
+      "FileType",
+      "ListID",
+      "ListUrl",
+      "ModifiedBy",
+      "owstaxIdDocumentx0020Type",
+      "owstaxIdMallTypes",
+      "owstaxidmetadataalltagsinfo",
+      "owstaxIdPropertyType",
+      "owstaxIdrmRecordClass",
+      "owstaxIdrmRecordType",
+      "Path",
+      "RecordType",
+      "RefinableDate15",
+      "RefinableDate16",
+      "RefinableString80",
+      "rmAcquireeOWSTEXT",
+      "rmAcquirerOWSTEXT",
+      "rmAuthorizationRevokeDateOWSDATE",
+      "rmContractEndDateOWSDATE",
+      "rmDocumentDateOWSDATE",
+      "rmDocYear",
+      "rmFiscalYearEndOWSDATE",
+      "ServerRedirectedEmbedURL",
+      "ServerRedirectedPreviewURL",
+      "ServerRedirectedURL",
+      "SharedWithDetailsOWSMTXT",
+      "TenantTDName",
+      "Title",
+      "UniqueID",
+      "V3CommentsOWSMTXT"
+    ],
+    "resultSourceId": "8413cd39-2156-4e00-b54d-11efd9abdb89",
+    "sortList": [],
+    "enableAudienceTargeting": true
+  },
+  "queryTextSource": 1,
+  "layoutProperties": {
+    "detailsListColumns": [
+      {
+        "uniqueId": "a8339bc1-617a-45e4-9964-a56fcf0f7d09",
+        "name": "Preview",
+        "value": "<pnp-filepreview onhover\r\n    data-preview-url=\"{{slot item @root.slots.PreviewUrl}}\"\r\n    data-preview-image-url=\"{{slot item @root.slots.PreviewImageUrl}}\"\r\n    <span><pnp-icon data-name=\"RedEye\" aria-hidden=\"true\"></pnp-icon></span>\r\n</pnp-filepreview>",
+        "useHandlebarsExpr": true,
+        "minWidth": "10",
+        "maxWidth": "20",
+        "enableSorting": false,
+        "isResizable": false,
+        "isMultiline": null,
+        "sortIdx": 1
+      },
+      {
+        "name": "Title",
+        "value": "<a href=\"{{item.AutoPreviewUrl}}\" target=\"{{_blank}}\" style=\"color: {{@root.theme.semanticColors.link}}\">\n\t{{item.Filename}}\n</a>",
+        "useHandlebarsExpr": true,
+        "minWidth": "90",
+        "maxWidth": "150",
+        "enableSorting": true,
+        "isMultiline": true,
+        "isResizable": false,
+        "sortIdx": 2
+      },
+      {
+        "uniqueId": "3678361c-386d-4f1a-9d3e-b50732753641",
+        "name": "Record Class",
+        "value": "AutoowstaxIdrmRecordClass",
+        "useHandlebarsExpr": false,
+        "minWidth": "160",
+        "maxWidth": 310,
+        "enableSorting": true,
+        "isResizable": false,
+        "isMultiline": false,
+        "sortIdx": 3
+      },
+      {
+        "uniqueId": "87801867-f70d-4c4b-85da-0f8b6c7698dc",
+        "name": "Record Type",
+        "value": "AutoowstaxIdrmRecordType",
+        "useHandlebarsExpr": false,
+        "minWidth": "110",
+        "maxWidth": 310,
+        "enableSorting": true,
+        "isResizable": false,
+        "isMultiline": false,
+        "sortIdx": 4
+      },
+      {
+        "uniqueId": "e7aa758a-c39e-446c-bfab-2380a2927ea1",
+        "name": "Year",
+        "value": "{{getDate rmDocumentDateOWSDATE 'YYYY'}}",
+        "useHandlebarsExpr": true,
+        "minWidth": "50",
+        "maxWidth": 310,
+        "enableSorting": true,
+        "isResizable": false,
+        "isMultiline": null,
+        "sortIdx": 5
+      },
+      {
+        "uniqueId": "fd501ced-0719-418d-9692-7c7da717030c",
+        "name": "Month",
+        "value": "{{getDate rmDocumentDateOWSDATE 'MM'}}",
+        "useHandlebarsExpr": true,
+        "minWidth": 50,
+        "maxWidth": 310,
+        "enableSorting": true,
+        "isResizable": false,
+        "isMultiline": null,
+        "sortIdx": 6
+      },
+      {
+        "uniqueId": "a9e3f53e-6003-4900-8824-56a9a3f25a11",
+        "name": "Banner Name",
+        "value": "TenantTDName",
+        "useHandlebarsExpr": null,
+        "minWidth": 50,
+        "maxWidth": 310,
+        "enableSorting": null,
+        "isResizable": null,
+        "isMultiline": null,
+        "sortIdx": 7
+      },
+      {
+        "uniqueId": "d4b1bedd-7f94-4ea5-84f0-d44e91546e4b",
+        "name": "Property Name",
+        "value": "BUName",
+        "useHandlebarsExpr": null,
+        "minWidth": 50,
+        "maxWidth": 310,
+        "enableSorting": null,
+        "isResizable": null,
+        "isMultiline": null
+      }
+    ],
+    "isCompact": true,
+    "showFileIcon": true,
+    "fieldIconExtension": "FileType",
+    "enableGrouping": false,
+    "groupByField": "",
+    "groupsCollapsed": true
+  },
+  "showSelectedFilters": true,
+  "showResultsCount": true,
+  "showBlankIfNoResult": false,
+  "useMicrosoftGraphToolkit": true,
+  "extensibilityLibraryConfiguration": [
+    {
+      "name": "Default extensibility library",
+      "enabled": true,
+      "id": "dc4f961b-dbe0-44b4-982d-5776bf99d015"
+    }
+  ],
+  "useVerticals": true,
+  "paging": {
+    "itemsCountPerPage": 15,
+    "pagingRange": 5,
+    "showPaging": true,
+    "hideDisabled": true,
+    "hideFirstLastPages": false,
+    "hideNavigation": false,
+    "useNextLinks": false
+  },
+  "dataSourceKey": "SharePointSearch",
+  "templateSlots": [
+    {
+      "slotName": "Title",
+      "slotField": "Title"
+    },
+    {
+      "slotName": "Path",
+      "slotField": "DefaultEncodingURL"
+    },
+    {
+      "slotName": "Summary",
+      "slotField": "HitHighlightedSummary"
+    },
+    {
+      "slotName": "FileType",
+      "slotField": "FileType"
+    },
+    {
+      "slotName": "PreviewImageUrl",
+      "slotField": "AutoPreviewImageUrl"
+    },
+    {
+      "slotName": "PreviewUrl",
+      "slotField": "AutoPreviewUrl"
+    },
+    {
+      "slotName": "Author",
+      "slotField": "AuthorOWSUSER"
+    },
+    {
+      "slotName": "Tags",
+      "slotField": "owstaxidmetadataalltagsinfo"
+    },
+    {
+      "slotName": "Date",
+      "slotField": "Created"
+    },
+    {
+      "slotName": "SiteId",
+      "slotField": "NormSiteID"
+    },
+    {
+      "slotName": "WebId",
+      "slotField": "NormWebID"
+    },
+    {
+      "slotName": "ListId",
+      "slotField": "NormListID"
+    },
+    {
+      "slotName": "ItemId",
+      "slotField": "NormUniqueID"
+    },
+    {
+      "slotName": "IsFolder",
+      "slotField": "ContentTypeId"
+    },
+    {
+      "slotName": "contentclass",
+      "slotField": "contentclass"
+    },
+    {
+      "slotName": "PersonQuery",
+      "slotField": "UserName"
+    },
+    {
+      "slotName": "UserDisplayName",
+      "slotField": "Title"
+    },
+    {
+      "slotName": "UserEmail",
+      "slotField": "UserName"
+    }
+  ],
+  "useInputQueryText": true,
+  "title": "Search Results",
+  "useFilters": true,
+  "filtersDataSourceReference": "WebPart.544c1372-fb1d-4e96-bc1e-31fd66979667.a0a70ffe-ab36-4375-900d-a70a846c56aa:pnpSearchFiltersWebPart",
+  "useDefaultQueryText": false,
+  "inlineTemplateContent": "<content id=\"data-content\">\r\n\r\n    <style>\r\n        /* Insert your CSS overrides here */\r\n    </style>\r\n\r\n    <div class=\"template\">\r\n\r\n        {{#if @root.properties.showSelectedFilters}}\r\n            <pnp-selectedfilters \r\n                data-filters=\"{{JSONstringify filters.selectedFilters 2}}\" \r\n                data-filters-configuration=\"{{JSONstringify filters.filtersConfiguration 2}}\" \r\n                data-instance-id=\"{{filters.instanceId}}\"\r\n                data-operator=\"{{filters.filterOperator}}\"\r\n                data-theme-variant=\"{{JSONstringify @root.theme}}\"\r\n            >\r\n            </pnp-selectedfilters>\r\n        {{/if}}\r\n        \r\n        {{#if @root.properties.showResultsCount}}\r\n            <div class=\"template--resultCount\">\r\n                <label class=\"ms-fontWeight-semibold\">{{@root.data.totalItemsCount}} results found.</label>\r\n            </div>\r\n        {{/if}}\r\n\r\n        <pnp-detailslist \r\n            data-items=\"{{JSONstringify data.items}}\" \r\n            data-columns-configuration=\"{{JSONstringify properties.layoutProperties.detailsListColumns}}\" \r\n            data-show-file-icon=\"{{properties.layoutProperties.showFileIcon}}\" \r\n            data-file-extension-field=\"{{properties.layoutProperties.fieldIconExtension}}\"  \r\n            data-is-container-field=\"{{@root.slots.IsFolder}}\"\r\n            data-is-compact=\"{{properties.layoutProperties.isCompact}}\"\r\n            data-group-by=\"{{properties.layoutProperties.groupByField}}\"\r\n            data-groups-collapsed=\"{{properties.layoutProperties.groupsCollapsed}}\"\r\n            data-context=\"{{JSONstringify @root}}\"\r\n            data-theme-variant=\"{{JSONstringify @root.theme}}\"\r\n        >\r\n        </pnp-detailslist>\r\n\r\n        {{#if @root.properties.paging.showPaging}}\r\n\r\n            {{#gt @root.data.totalItemsCount @root.properties.paging.itemsCountPerPage}}\r\n            \r\n                <pnp-pagination \r\n                    data-total-items=\"{{@root.data.totalItemsCount}}\" \r\n                    data-hide-first-last-pages=\"{{@root.properties.paging.hideFirstLastPages}}\"\r\n                    data-hide-disabled=\"{{@root.properties.paging.hideDisabled}}\"\r\n                    data-hide-navigation=\"{{@root.properties.paging.hideNavigation}}\"\r\n                    data-range=\"{{@root.properties.paging.pagingRange}}\" \r\n                    data-items-count-per-page=\"{{@root.properties.paging.itemsCountPerPage}}\" \r\n                    data-current-page-number=\"{{@root.paging.currentPageNumber}}\"\r\n                    data-page-links=\"{{JSONstringify @root.data.paging.links}}\"\r\n                    data-theme-variant=\"{{JSONstringify @root.theme}}\"\r\n                >\r\n                </pnp-pagination>\r\n            {{/gt}}\r\n            \r\n        {{/if}}\r\n    </div>\r\n</content>\r\n\r\n<content id=\"placeholder-content\">\r\n    <style>\r\n        /* Insert your CSS overrides here */\r\n    </style>\r\n\r\n    <div class=\"placeholder\">\r\n        {{!-- #if showResultsCount --}}\r\n            <div class=\"template--resultCount\">\r\n                <span class=\"placeholder--shimmer placeholder--line\" style=\"width: 20%\"></span>\r\n            </div>\r\n        {{!-- /if --}}\r\n        <pnp-detailslist \r\n            data-columns-configuration=\"{{JSONstringify properties.layoutProperties.detailsListColumns}}\" \r\n            data-show-file-icon=\"{{properties.layoutProperties.showFileIcon}}\" \r\n            data-is-compact=\"{{properties.layoutProperties.isCompact}}\" \r\n            data-show-shimmers=\"true\"\r\n            data-group-by=\"{{properties.layoutProperties.groupByField}}\"\r\n            data-groups-collapsed=\"{{properties.layoutProperties.groupsCollapsed}}\"\r\n            data-theme-variant=\"{{JSONstringify @root.theme}}\"\r\n            >\r\n        </pnp-detailslist>\r\n    </div>\r\n\r\n</content>",
+  "externalTemplateUrl": "",
+  "queryText": {
+    "__type": "DynamicProperty",
+    "reference": {
+      "_reference": "PageContext:UrlData:queryParameters",
+      "_sourceId": "PageContext",
+      "_property": "UrlData",
+      "_propertyPath": "queryParameters"
+    }
+  },
+  "filtersData": {
+    "__type": "DynamicProperty",
+    "value": {}
+  }
+}
